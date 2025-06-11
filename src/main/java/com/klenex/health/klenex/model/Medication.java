@@ -29,6 +29,14 @@ public class Medication {
     public Medication() {
     }
 
+    public Medication(int drugId, String name, MedicationGroup medicationGroup, String strength, DosageForm dosageForm, int quantity) {
+        this.drugId = drugId;
+        this.name = name;
+        this.medicationGroup = medicationGroup;
+        this.strength = strength;
+        this.dosageForm = dosageForm;
+        this.quantity = quantity;
+    }
 
     public int getDrugId() {
         return drugId;
