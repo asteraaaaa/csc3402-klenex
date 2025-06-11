@@ -11,7 +11,6 @@
 <div layout:fragment="content">
     <div class="container py-0">
 
-        <!-- Search bar -->
         <div class="mb-4">
             <input type="text" id="searchInput" class="form-control" placeholder="Search doctors by name..." onkeyup="filterDoctors()">
         </div>
@@ -25,7 +24,7 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${doctors != null}">
             <div class="col" th:each="doctor : ${doctors}">
                 <div class="card h-100 doctor-card">
-                    <img th:src="${doctor.image}" class="card-img-top" alt="Doctor Image" style="object-fit: cover; height: 200px;">
+                    <img th:src="@{/images/{img}(img=${doctor.image})}" class="card-img-top" alt="Doctor Image" style="object-fit: cover; height: 200px;">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${doctor.name}"></h5>
                         <p class="card-text mb-1"><strong>ID:</strong> <span th:text="${doctor.doctorId}"></span></p>
