@@ -1,4 +1,4 @@
-package com.klenex.health.klenex.respiratory;
+package com.klenex.health.klenex.repository;
 
 import com.klenex.health.klenex.model.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
