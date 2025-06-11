@@ -26,4 +26,68 @@ public class Medication {
     @Column(name = "quantity")
     private int quantity;
 
+    public Medication() {
+    }
+
+
+    public int getDrugId() {
+        return drugId;
+    }
+
+    public void setDrugId(int drugId) {
+        this.drugId = drugId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MedicationGroup getMedicationGroup() {
+        return medicationGroup;
+    }
+
+    public void setMedicationGroup(MedicationGroup medicationGroup) {
+        this.medicationGroup = medicationGroup;
+    }
+
+    public String getStrength() {
+        return strength;
+    }
+
+    public void setStrength(String strength) {
+        this.strength = strength;
+    }
+
+    public DosageForm getDosageForm() {
+        return dosageForm;
+    }
+
+    public void setDosageForm(DosageForm dosageForm) {
+        this.dosageForm = dosageForm;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Medication{" +
+                "drugId=" + drugId +
+                ", name='" + name + '\'' +
+                ", medicationGroup=" + medicationGroup +
+                ", strength='" + strength + '\'' +
+                ", dosageForm=" + dosageForm +
+                ", quantity=" + quantity +
+                '}';
+    }
+
 }
