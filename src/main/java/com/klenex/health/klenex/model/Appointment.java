@@ -33,4 +33,86 @@ public class Appointment {
 
     @Column(name = "remark")
     private String remark;
+
+    public Appointment() {
+    }
+
+    public Appointment(Long id, Doctor doctor, Patient patient, Date date, Time time, AppointmentStatus status, String remark) {
+        this.id = id;
+        this.doctor = doctor;
+        this.patient = patient;
+        this.date = date;
+        this.time = time;
+        this.status = status;
+        this.remark = remark;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public void setTime(Time time) {
+        this.time = time;
+    }
+
+    public AppointmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AppointmentStatus status) {
+        this.status = status;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "id=" + id +
+                ", doctor=" + doctor +
+                ", patient=" + patient +
+                ", date=" + date +
+                ", time=" + time +
+                ", status=" + status +
+                ", remark='" + remark + '\'' +
+                '}';
+    }
 }
