@@ -1,10 +1,10 @@
 INSERT INTO patient (name, phone, street, city, state, postcode, country, dob, gender)
 VALUES
-    ('Aisyah Binti Ramli', '0123456789', '12 Jalan Mawar', 'Kuala Lumpur', 'Kuala Lumpur', '50000', 'Malaysia', '1998-04-12', 'FEMALE'),
-    ('Daniel Lim Wei Hong', '0139988776', '88 Jalan Anggerik', 'Petaling Jaya', 'Selangor', '47300', 'Malaysia', '1995-09-30', 'MALE'),
-    ('Nurul Ain Zulkifli', '0176655443', '20 Taman Desa Ilmu', 'Shah Alam', 'Selangor', '40000', 'Malaysia', '2001-01-15', 'FEMALE'),
-    ('Syafiq Abdullah', '0164455667', '55 Jalan Teratai', 'Alor Setar', 'Kedah', '05100', 'Malaysia', '1987-07-22', 'MALE'),
-    ('Tan Mei Ling', '0198765432', '31 Lorong Mutiara', 'Georgetown', 'Penang', '10200', 'Malaysia', '1992-12-05', 'FEMALE');
+    ('Aisyah Binti Ramli', '0123456789', '12 Jalan Mawar', 'Kuala Lumpur', 'Kuala Lumpur', '50000', 'Malaysia', '1998-04-12', 'F'),
+    ('Daniel Lim Wei Hong', '0139988776', '88 Jalan Anggerik', 'Petaling Jaya', 'Selangor', '47300', 'Malaysia', '1995-09-30', 'M'),
+    ('Nurul Ain Zulkifli', '0176655443', '20 Taman Desa Ilmu', 'Shah Alam', 'Selangor', '40000', 'Malaysia', '2001-01-15', 'F'),
+    ('Syafiq Abdullah', '0164455667', '55 Jalan Teratai', 'Alor Setar', 'Kedah', '05100', 'Malaysia', '1987-07-22', 'M'),
+    ('Tan Mei Ling', '0198765432', '31 Lorong Mutiara', 'Georgetown', 'Penang', '10200', 'Malaysia', '1992-12-05', 'F');
 
 INSERT INTO doctor (name, room, phone, email, password, street, city, state, postcode, country, image)
 VALUES
