@@ -1,86 +1,84 @@
 package com.klenex.health.klenex.controller;
 
 import com.klenex.health.klenex.model.Doctor;
-import com.klenex.health.klenex.repository.DoctorRepository;
+import com.klenex.health.klenex.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
-@RequestMapping("/doctors")
+@RequestMapping("/doctor")
 public class DoctorController {
-    private final DoctorRepository doctorRepository;
 
-    public DoctorController(DoctorRepository doctorRepository) {
-        this.doctorRepository = doctorRepository;
+    private final DoctorService doctorService;
+
+    public DoctorController(DoctorService doctorService) {
+        this.doctorService = doctorService;
     }
 
-    @GetMapping("list")
-    public String showUpdateForm(Model model) {
-        model.addAttribute("doctors", doctorRepository.findAll());
-        return "list-doctor";
+    @GetMapping("")
+    public String showAllDoctorsForm(Model model) {
+        List<Doctor> doctors = doctorService.listAllDoctors();
+        model.addAttribute("doctors", doctors != null ? doctors : new ArrayList<>());
+        return "admin/doctor"; // 🔁 Make sure this matches your actual template path
     }
 
-    @GetMapping("signup")
-    public String showSignUpForm(Model model){
+    @GetMapping("/signup")
+    public String showAddNewDoctorForm(Model model) {
         model.addAttribute("doctor", new Doctor());
-        return "add-doctor";
+        return "doctor/add-doctor";
     }
 
-    @PostMapping("add")
-    public String addDoctor(@Valid Doctor doctor, BindingResult result, Model model) {
+    @PostMapping("/add")
+    public String addDoctor(@Valid Doctor doctor, BindingResult result) {
         if (result.hasErrors()) {
-            return "add-doctor";
+            return "doctor/add-doctor";
         }
 
-        doctorRepository.save(doctor);
-        return "redirect:list";
+        doctorService.addNewDoctor(doctor);
+        return "redirect:/doctor";
     }
 
-    @GetMapping("update")
+    @GetMapping("/update")
     public String showUpdateMainForm(Model model) {
-        model.addAttribute("doctors", doctorRepository.findAll());
+        model.addAttribute("doctors", doctorService.listAllDoctors());
         return "choose-doctor-to-update";
     }
 
-    @GetMapping("edit/{id}")
+    @GetMapping("/update/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
-        Doctor doctor = doctorRepository.findById((int) id)
+        Doctor doctor = doctorService.findDoctorById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid doctor Id:" + id));
         model.addAttribute("doctor", doctor);
         return "update-doctor";
     }
 
-
-    @PostMapping("update/{id}")
-    public String updateDoctor(@PathVariable("id") long id, @Valid Doctor doctor, BindingResult result, Model model) {
+    @PostMapping("/update/{id}")
+    public String updateDoctor(@PathVariable("id") long id, @Valid Doctor doctor, BindingResult result) {
         if (result.hasErrors()) {
             doctor.setDoctorId((int) id);
-            return "index";
+            return "update-doctor";
         }
-
-        model.addAttribute("doctor", doctorRepository.findAll());
-        doctorRepository.save(doctor);
-        return "list-doctor";
+        doctor.setDoctorId((int) id);
+        doctorService.updateDoctor(doctor);
+        return "redirect:/doctor";
     }
 
-    @GetMapping("delete")
+    @GetMapping("/delete")
     public String showDeleteMainForm(Model model) {
-        model.addAttribute("doctors", doctorRepository.findAll());
+        model.addAttribute("doctors", doctorService.listAllDoctors());
         return "choose-doctor-to-delete";
     }
 
-    @GetMapping("delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteDoctor(@PathVariable("id") long id, Model model) {
-        Doctor doctor = doctorRepository.findById((int) id)
+        Doctor doctor = doctorService.findDoctorById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid doctor Id:" + id));
-        doctorRepository.delete(doctor);
-        model.addAttribute("doctors", doctorRepository.findAll());
-        return "list-doctor";
+        doctorService.deleteDoctor(doctor);
+        return "redirect:/doctor";
     }
 }

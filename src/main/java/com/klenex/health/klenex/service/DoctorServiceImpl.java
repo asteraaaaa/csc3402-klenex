@@ -11,7 +11,6 @@ public class DoctorServiceImpl implements DoctorService {
 
     private final DoctorRepository doctorRepository;
 
-    //Constructor injection
     public DoctorServiceImpl(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }
@@ -19,11 +18,6 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<Doctor> listAllDoctors() {
         return List.of();
-    }
-
-    @Override
-    public List<Doctor> listAllDoctor(){
-        return doctorRepository.findAll();
     }
 
     @Override

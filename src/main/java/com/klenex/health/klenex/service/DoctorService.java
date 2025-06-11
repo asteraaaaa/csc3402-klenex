@@ -6,7 +6,6 @@ import java.util.Optional;
 
 public interface DoctorService {
     List<Doctor> listAllDoctors();
-    List<Doctor> listAllDoctor();
     Doctor addNewDoctor(Doctor doctor);
     Optional<Doctor> findDoctorById(Integer doctorId);
     Doctor updateDoctor(Doctor doctor);

@@ -1,54 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Doctor Management</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" crossorigin="anonymous">
+    <title>Doctor</title>
 </head>
+
 <body>
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0">Doctor</h2>
-        <a href="/doctors/signup" class="btn btn-dark">Add Doctor</a>
-    </div>
+<div layout:fragment="content">
+    <div class="container py-0">
 
-    <!-- Search bar -->
-    <div class="mb-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search doctors by name..." onkeyup="filterDoctors()">
-    </div>
+        <!-- Search bar -->
+        <div class="mb-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search doctors by name..." onkeyup="filterDoctors()">
+        </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${doctors != null}" th:each="doctor : ${doctors}" class="doctor-card">
-        <div class="col">
-            <div class="card h-100">
-                <img th:src="${doctor.image}" class="card-img-top" alt="Doctor Image" style="object-fit: cover; height: 200px;">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${doctor.name}"></h5>
-                    <p class="card-text mb-1"><strong>ID:</strong> <span th:text="${doctor.doctorId}"></span></p>
-                    <p class="card-text mb-1"><strong>Room:</strong> <span th:text="${doctor.room}"></span></p>
-                    <p class="card-text mb-1"><strong>Phone:</strong> <span th:text="${doctor.phone}"></span></p>
-                    <p class="card-text mb-1"><strong>Email:</strong> <span th:text="${doctor.email}"></span></p>
-                    <p class="card-text mb-1"><strong>Address:</strong><br>
-                        <span th:text="${doctor.street} + ', '"></span>
-                        <span th:text="${doctor.city} + ', '"></span>
-                        <span th:text="${doctor.state} + ' '"></span>
-                        <span th:text="${doctor.postcode} + ', '"></span>
-                        <span th:text="${doctor.country}"></span>
-                    </p>
-                </div>
-                <div class="card-footer d-flex justify-content-between">
-                    <a th:href="@{/doctors/edit/{id}(id=${doctor.doctorId})}" class="btn btn-success">
-                        <i class="fas fa-user-edit"></i>
-                    </a>
-                    <form th:action="@{/doctors/delete/{id}(id=${doctor.doctorId})}" method="get">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">
-                            <i class="fas fa-user-times"></i>
-                        </button>
-                    </form>
+        <div class="card-footer d-flex justify-content-end bg-white">
+            <a href="/doctor/signup" class="btn btn-success">
+                <i class="fas fa-plus-circle"></i> Add New Doctor
+            </a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${doctors != null}">
+            <div class="col" th:each="doctor : ${doctors}">
+                <div class="card h-100 doctor-card">
+                    <img th:src="${doctor.image}" class="card-img-top" alt="Doctor Image" style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${doctor.name}"></h5>
+                        <p class="card-text mb-1"><strong>ID:</strong> <span th:text="${doctor.doctorId}"></span></p>
+                        <p class="card-text mb-1"><strong>Room:</strong> <span th:text="${doctor.room}"></span></p>
+                        <p class="card-text mb-1"><strong>Phone:</strong> <span th:text="${doctor.phone}"></span></p>
+                        <p class="card-text mb-1"><strong>Email:</strong> <span th:text="${doctor.email}"></span></p>
+                        <p class="card-text mb-1"><strong>Address:</strong><br>
+                            <span th:text="${doctor.street} + ', '"></span>
+                            <span th:text="${doctor.city} + ', '"></span>
+                            <span th:text="${doctor.state} + ' '"></span>
+                            <span th:text="${doctor.postcode} + ', '"></span>
+                            <span th:text="${doctor.country}"></span>
+                        </p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{/doctors/edit/{id}(id=${doctor.doctorId})}" class="btn btn-success">
+                            <i class="fas fa-user-edit"></i>
+                        </a>
+                        <form th:action="@{/doctors/delete/{id}(id=${doctor.doctorId})}" method="get">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">
+                                <i class="fas fa-user-times"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -57,11 +62,11 @@
     function filterDoctors() {
         const input = document.getElementById('searchInput');
         const filter = input.value.toLowerCase();
-        const cards = document.querySelectorAll('.card');
+        const cards = document.querySelectorAll('.doctor-card');
 
         cards.forEach(card => {
             const name = card.querySelector('.card-title').textContent.toLowerCase();
-            card.parentElement.style.display = name.includes(filter) ? '' : 'none';
+            card.closest('.col').style.display = name.includes(filter) ? '' : 'none';
         });
     }
 </script>
