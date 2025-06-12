@@ -21,12 +21,14 @@ public class DoctorController {
 
     @GetMapping("")
     public String showAllDoctorsForm(Model model) {
+        model.addAttribute("activePage", "doctor");
         model.addAttribute("doctors", doctorRepository.findAll());
         return "admin/doctor";
     }
 
     @GetMapping("signup")
     public String showSignUpForm(Model model) {
+        model.addAttribute("activePage", "doctor");
         model.addAttribute("doctor", new Doctor());
         return "doctors/add-doctor";
     }
@@ -43,6 +45,7 @@ public class DoctorController {
 
     @GetMapping("update")
     public String showUpdateMainForm(Model model) {
+        model.addAttribute("activePage", "doctor");
         model.addAttribute("doctors", doctorRepository.findAll());
         return "doctors/choose-doctor-to-update";
     }
