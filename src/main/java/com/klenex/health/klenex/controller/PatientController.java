@@ -24,12 +24,14 @@ public class PatientController {
     @GetMapping("")
     public String showAllPatientsForm(Model model) {
         model.addAttribute("patients", patientService.listAllPatients());
+        model.addAttribute("activePage", "patient");
         return "admin/patient";
     }
 
     @GetMapping("signup")
     public String showAddNewPatientForm(Model model){
         model.addAttribute("patient", new Patient());
+        model.addAttribute("activePage", "patient");
         return "patient/add-patient";
     }
 
