@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -40,7 +42,7 @@ public class AppointmentController {
     public String listAppointments(Model model) {
         model.addAttribute("appointments", appointmentService.listAllAppointments());
         model.addAttribute("activePage", "appointment");
-        return "appointment/list";
+        return "admin/appointment";
     }
 
     @GetMapping("signup")
@@ -64,22 +66,26 @@ public class AppointmentController {
             return "appointment/add-appointment";
         }
 
-        appointmentService.updateAppointment(appointment);
+        appointmentService.addNewAppointment(appointment);
         return "redirect:/appointment";
+    }
+
+    @GetMapping("update")
+    public String showUpdateMainForm(Model model) {
+        model.addAttribute("appointments", appointmentService.listAllAppointments());
+        model.addAttribute("activePage", "appointment");
+        return "choose-appointment-to-update";
     }
 
     @GetMapping("update/{id}")
     public String showUpdateForm(@PathVariable("id") Long id, Model model) {
-        Optional<Appointment> optionalAppointment = appointmentService.findAppointmentById(id);
-        if (optionalAppointment.isEmpty()) {
-            throw new IllegalArgumentException("Invalid appointment ID: " + id);
-        }
+        Appointment appointment = appointmentService.findAppointmentById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid appointment ID: " + id));
 
-        model.addAttribute("appointment", optionalAppointment.get());
+        model.addAttribute("appointment", appointment);
         model.addAttribute("patients", patientService.listAllPatients());
         model.addAttribute("doctors", doctorService.listAllDoctors());
         //model.addAttribute("treatments", treatmentService.findAllTreatments());
-        model.addAttribute("activePage", "appointment");
         return "appointment/update-appointment";
     }
 
@@ -103,7 +109,9 @@ public class AppointmentController {
 
     @PostMapping("delete/{id}")
     public String deleteAppointment(@PathVariable("id") Long id) {
+        System.out.println("Delete request received for ID: " + id);
         appointmentService.deleteAppointmentById(id);
+        System.out.println("Delete operation completed for ID: " + id);
         return "redirect:/appointment";
     }
 
