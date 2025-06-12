@@ -16,19 +16,16 @@
       </div>
       <div class="card-body">
         <form th:action="@{/doctors/add}" th:object="${doctor}" method="post">
-
-            <div class="form-group col-md-12">
-              <label for="name">Name</label>
-              <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Doctor Name">
-              <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
-            </div>
-
-
-            <div class="form-group col-md-6">
-              <label for="room">Room</label>
-              <input type="text" th:field="*{room}" class="form-control" id="room" placeholder="Room">
-              <span th:if="${#fields.hasErrors('room')}" th:errors="*{room}" class="text-danger"></span>
-            </div>
+          <div class="form-group col-md-12">
+            <label for="name">Name</label>
+            <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Doctor Name">
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="room">Room</label>
+            <input type="text" th:field="*{room}" class="form-control" id="room" placeholder="Room">
+            <span th:if="${#fields.hasErrors('room')}" th:errors="*{room}" class="text-danger"></span>
+          </div>
           <div class="form-group col-md-6">
             <label for="phone">Phone Number</label>
             <input type="text" th:field="*{phone}" class="form-control" id="phone" placeholder="Phone Number">
