@@ -9,7 +9,6 @@ public interface PatientService {
     Patient addNewPatient(Patient patient);
 
     Patient updatePatient(Patient patient);
-    void deletePatient(Patient patient);
     void deletePatientById(int id); // Add this method
     Optional<Patient> findPatientById(int id);
 }

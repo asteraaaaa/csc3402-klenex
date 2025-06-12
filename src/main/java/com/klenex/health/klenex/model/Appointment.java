@@ -21,6 +21,9 @@ public class Appointment {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL)
+    private Treatment treatment;
+
     @Column(name = "date")
     private Date date;
 
@@ -37,14 +40,23 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(Long id, Doctor doctor, Patient patient, Date date, Time time, AppointmentStatus status, String remark) {
+    public Appointment(Long id, Doctor doctor, Patient patient, Treatment treatment, Date date, Time time, AppointmentStatus status, String remark) {
         this.id = id;
         this.doctor = doctor;
         this.patient = patient;
+        this.treatment = treatment;
         this.date = date;
         this.time = time;
         this.status = status;
         this.remark = remark;
+    }
+
+    public Treatment getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(Treatment treatment) {
+        this.treatment = treatment;
     }
 
     public Long getId() {

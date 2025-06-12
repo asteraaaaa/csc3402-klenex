@@ -9,39 +9,35 @@ import java.util.Optional;
 
 @Service
 public class PatientServiceImpl implements PatientService{
-    private final PatientRepository patientRespiratory;
+    private final PatientRepository patientRepository;
 
     // Constructor Injection
-    public PatientServiceImpl(PatientRepository patientRespiratory) {
-        this.patientRespiratory = patientRespiratory;
+    public PatientServiceImpl(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
     }
 
     @Override
     public List<Patient> listAllPatients() {
-        return patientRespiratory.findAll();
+        return patientRepository.findAll();
     }
 
     @Override
     public Patient addNewPatient(Patient patient) {
-        return patientRespiratory.save(patient);
+        return patientRepository.save(patient);
     }
 
     public Optional<Patient> findPatientById(int id) {
-        return patientRespiratory.findById(id);
+        return patientRepository.findById(id);
     }
 
     @Override
     public Patient updatePatient(Patient patient) {
-        return patientRespiratory.save(patient);
-    }
-    @Override
-    public void deletePatient(Patient patient) {
-        patientRespiratory.delete(patient);
+        return patientRepository.save(patient);
     }
 
     @Override
     public void deletePatientById(int id) {
-        patientRespiratory.deleteById(id); // More direct approach
+        patientRepository.deleteById(id);
     }
 
 }

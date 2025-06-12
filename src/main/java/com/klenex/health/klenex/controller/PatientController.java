@@ -43,22 +43,24 @@ public class PatientController {
         }
 
         patientService.addNewPatient(patient);
-        return "redirect:";
+        return "redirect:/patient";
     }
 
     @GetMapping("update")
     public String showUpdateMainForm(Model model) {
         model.addAttribute("patients", patientService.listAllPatients());
+        model.addAttribute("activePage", "patient");
         return "choose-patient-to-update";
     }
 
     @GetMapping("update/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
+        model.addAttribute("activePage", "patient");
         Patient patient = patientService.findPatientById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + (int) id));
 
         model.addAttribute("patient", patient);
-        return "update-patient";
+        return "patient/update-patient";
     }
 
     @PostMapping("update/{id}")
@@ -66,38 +68,21 @@ public class PatientController {
                                 BindingResult result, Model model) {
         if (result.hasErrors()) {
             patient.setPatientId((int) id);
-            return "update-patient";  // Changed from "index" to "update-patient"
+            return "patient/update-patient";
         }
-        patient.setPatientId((int) id);  // Ensure ID is set
+        patient.setPatientId((int) id);
         patientService.updatePatient(patient);
-        return "redirect:/patients/list";  // Changed to absolute path
+        return "redirect:/patient";
     }
 
 
-    @GetMapping("delete")
-    public String showDeleteMainForm(Model model) {
-        model.addAttribute("patients", patientService.listAllPatients());
-        return "choose-patient-to-delete";
-    }
-
-    @GetMapping("delete/{id}")
-    public String deletePatient(@PathVariable("id") int id, Model model) {
-        try {
-            patientService.deletePatientById(id); // Changed to use ID directly
-            return "redirect:/patients/list";
-        } catch (Exception e) {
-            model.addAttribute("error", "Error deleting patient: " + e.getMessage());
-            model.addAttribute("patients", patientService.listAllPatients());
-            return "choose-patient-to-delete";
-        }
-    }
 
     @PostMapping("delete/{id}")
     public String deletePatient(@PathVariable("id") int id) {
         System.out.println("Delete request received for ID: " + id);
         patientService.deletePatientById(id);
         System.out.println("Delete operation completed for ID: " + id);
-        return "redirect:/patients/list";
+        return "redirect:/patient";
     }
 
 }
