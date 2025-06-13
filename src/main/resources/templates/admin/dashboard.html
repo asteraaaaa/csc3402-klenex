@@ -4,157 +4,132 @@
       layout:decorate="~{layout}">
 
 <head>
-    <title>Dashboard</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        .center-align {
-            text-align: center;
-        }
-
+        .center-align { text-align: center; }
         .stat-card {
             transition: transform 0.3s;
+            height: 100%;
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
-
-        .progress-thin {
-            height: 5px;
-        }
-
-        .diagnosis-item {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .diagnosis-item:last-child {
-            border-bottom: none;
-        }
-
         .big-icon {
             font-size: 3.5rem;
             display: block;
             margin-bottom: 10px;
             line-height: 1;
         }
+        .fixed-card-height {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .fixed-card-height .card-body { flex-grow: 1; }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .status-scheduled { background-color: #fff3cd; color: #856404; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .status-cancelled { background-color: #f8d7da; color: #721c24; }
+        .stretched-link::after {
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: 1;
+            content: "";
+        }
     </style>
-
 </head>
 
 <body>
 <div layout:fragment="content">
-    <div class="container py-0">
-        <h3 class="mb-4">Admin Dashboard</h3>
+    <div class="container py-3">
 
-        <!-- Add this right below the opening container div, before the stats cards -->
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Admin Dashboard</h3>
+            <div class="text-muted">
+                <i class="fas fa-calendar-alt mr-1"></i>
+                <span th:text="${#temporals.format(#temporals.createToday(), 'dd MMMM yyyy')}"></span>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body">
-                <form th:action="@{/dashboard}" method="get" class="d-flex align-items-end gap-2 flex-wrap flex-md-nowrap">
-                    <div class="form-group mb-0" style="min-width: 180px;">
-                        <label for="searchBy" class="font-weight-bold">Search By</label>
-                        <select class="form-control" id="searchBy" name="searchBy">
-                            <option value="patient">Patient Name</option>
-                            <option value="doctor">Doctor Name</option>
-                            <option value="date">Date</option>
-                            <option value="status">Status</option>
-                        </select>
-                    </div>
-                    <div class="form-group flex-grow-1 mb-0">
-                        <label for="searchTerm" class="font-weight-bold">Search Term</label>
-                        <input type="text" class="form-control" id="searchTerm" name="searchTerm"
-                               th:value="${param.searchTerm}" placeholder="Type here...">
-                    </div>
-                    <div class="form-group mb-0">
-                        <button type="submit" class="btn btn-primary mt-2">
-                            <i class="fas fa-search"></i> Search
-                        </button>
+            <div class="card-body p-3">
+                <form th:action="@{/dashboard}" method="get" class="d-flex align-items-end flex-wrap">
+                    <div class="form-group mb-0 flex-grow-1 mr-2">
+                        <label for="searchTerm" class="font-weight-bold">Search</label>
+                        <div class="input-group">
+                            <select class="custom-select" name="searchBy" style="max-width: 150px;">
+                                <option value="patient">Patient</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="date">Date</option>
+                                <option value="status">Status</option>
+                            </select>
+                            <input type="text" class="form-control" id="searchTerm" name="searchTerm"
+                                   th:value="${param.searchTerm}" placeholder="Search term...">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Stats Cards Row -->
+        <!-- First Row: Stats Cards -->
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center shadow-sm">
-                    <div class="card-body">
+                <div class="card stat-card text-center shadow-sm fixed-card-height">
+                    <div class="card-body position-relative">
                         <i class="bi bi-person-badge text-primary big-icon"></i>
-                        <h2 class="card-title" th:text="${dashboardStats.totalDoctors}">0</h2>
+                        <h2 class="card-title" th:text="${totalDoctors}">0</h2>
                         <h5 class="card-title">Total Doctors</h5>
+                        <a href="/doctor" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center shadow-sm">
-                    <div class="card-body">
+                <div class="card stat-card text-center shadow-sm fixed-card-height">
+                    <div class="card-body position-relative">
                         <i class="bi bi-people text-success big-icon"></i>
-                        <h2 class="card-title" th:text="${dashboardStats.totalPatients}">0</h2>
+                        <h2 class="card-title" th:text="${totalPatients}">0</h2>
                         <h5 class="card-title">Total Patients</h5>
+                        <a href="/patient" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center shadow-sm">
-                    <div class="card-body">
+                <div class="card stat-card text-center shadow-sm fixed-card-height">
+                    <div class="card-body position-relative">
                         <i class="bi bi-calendar-check text-info big-icon"></i>
-                        <h2 class="card-title" th:text="${dashboardStats.totalAppointments}">0</h2>
+                        <h2 class="card-title" th:text="${totalAppointments}">0</h2>
                         <h5 class="card-title">Total Appointments</h5>
+                        <a href="/appointment" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center shadow-sm">
-                    <div class="card-body">
+                <div class="card stat-card text-center shadow-sm fixed-card-height">
+                    <div class="card-body position-relative">
                         <i class="bi bi-capsule text-warning big-icon"></i>
-                        <h2 class="card-title" th:text="${dashboardStats.totalMedications}">0</h2>
+                        <h2 class="card-title" th:text="${totalMedications}">0</h2>
                         <h5 class="card-title">Total Medications</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Middle Cards Row -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light font-weight-bold">
-                        <i class="fas fa-calendar-week"></i> Appointments This Week
-                    </div>
-                    <div class="card-body">
-                        <div th:each="day : ${weeklyAppointments}">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span th:text="${day.key}">Day</span>
-                                <span class="badge bg-primary">
-                                    <span th:text="${day.value}">0</span> appointments
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light font-weight-bold">
-                        <i class="fas fa-diagnoses"></i> Common Diagnosis
-                    </div>
-                    <div class="card-body">
-                        <div th:each="diagnosis, stat : ${commonDiagnoses}" class="diagnosis-item">
-                            <div class="d-flex justify-content-between">
-                                <span th:text="${diagnosis.name}">Diagnosis</span>
-                                <span class="text-muted" th:text="${diagnosis.percentage} + '%'">0%</span>
-                            </div>
-                            <div class="progress progress-thin mt-2">
-                                <div class="progress-bar"
-                                     th:classappend="${stat.index == 0} ? 'bg-danger' :
-                                                    ${stat.index == 1} ? 'bg-warning' :
-                                                    ${stat.index == 2} ? 'bg-info' :
-                                                    ${stat.index == 3} ? 'bg-success' : 'bg-primary'"
-                                     th:style="'width:' + ${diagnosis.percentage} + '%'"></div>
-                            </div>
-                        </div>
+                        <a href="/medication" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
@@ -162,16 +137,21 @@
 
         <!-- Recent Appointments Table -->
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light font-weight-bold">
-                <i class="fas fa-calendar-day"></i> Recent Appointments
+            <div class="card-header bg-light font-weight-bold d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-calendar-day mr-2"></i>Recent Appointments</span>
+                <div>
+                    <a href="/appointment/signup" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus mr-1"></i> New Appointment
+                    </a>
+                </div>
             </div>
-            <div class="card-body p-3">
+            <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-sm table-striped table-hover mb-0">
-                        <thead class="table-primary">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="thead-light">
                         <tr>
-                            <th class="center-align">#</th>
-                            <th>Patient Name</th>
+                            <th class="center-align">ID</th>
+                            <th>Patient</th>
                             <th>Doctor</th>
                             <th class="center-align">Date</th>
                             <th class="center-align">Time</th>
@@ -179,38 +159,65 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${recentAppointments.isEmpty()}">
-                            <td colspan="6" class="text-center text-muted py-3">No Recent Appointments</td>
+                        <tr th:if="${appointments.isEmpty()}">
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-calendar-times fa-2x mb-2"></i><br>
+                                No appointments found
+                            </td>
                         </tr>
-                        <tr th:each="appointment, iterStat : ${recentAppointments}">
-                            <td class="center-align" th:text="${iterStat.count}"></td>
-                            <td th:text="${appointment.patientName}"></td>
-                            <td th:text="${appointment.doctorName}"></td>
-                            <td class="center-align" th:text="${#dates.format(appointment.date, 'dd-MM-yyyy')}"></td>
-                            <td class="center-align" th:text="${#temporals.format(appointment.time, 'HH:mm')}"></td>
+                        <tr th:each="appointment : ${appointments}">
+                            <td class="center-align" th:text="${appointment.id}"></td>
+                            <td>
+                                <a th:if="${appointment.patient != null}"
+                                   th:href="@{/patient/update/{id}(id=${appointment.patient.patientId})}">
+                                    <span th:text="${appointment.patient.name}"></span>
+                                    <small class="d-block text-muted" th:text="${appointment.patient.phone}"></small>
+                                </a>
+                            </td>
+                            <td>
+                                <a th:if="${appointment.doctor != null}"
+                                   th:href="@{/doctor/update/{id}(id=${appointment.doctor.doctorId})}">
+                                    <span th:text="${appointment.doctor.name}"></span>
+                                    <small class="d-block text-muted"
+                                           th:text="'Room: ' + ${appointment.doctor.room}"></small>
+                                </a>
+                            </td>
+                            <td class="center-align" th:text="${appointment.date}">Date</td>
+                            <td class="center-align" th:text="${appointment.time}">Time</td>
+
+                            <!-- In your appointment table row -->
                             <td class="center-align">
-                                <span th:switch="${appointment.status}" class="badge"
-                                      th:classappend="${appointment.status == 'Confirmed'} ? 'badge-success' :
-                                                     ${appointment.status == 'Pending'} ? 'badge-warning' : 'badge-secondary'">
-                                    <span th:text="${appointment.status}"></span>
-                                </span>
+                                <span th:if="${appointment.status != null}"
+                                      th:text="${appointment.status.name()}">
+</span>
+                                <span th:unless="${appointment.status != null}"></span>
+
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="card-footer d-flex justify-content-end bg-white">
-                <a href="/appointments" class="btn btn-primary">
-                    <i class="fas fa-list"></i> View All Appointments
+            <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                <div class="text-muted small">
+                    Showing <span th:text="${#lists.size(appointments)}"></span> of
+                    <span th:text="${totalAppointments}"></span> appointments
+                </div>
+                <a href="/appointment" class="btn btn-sm btn-primary">
+                    <i class="fas fa-list mr-1"></i> View All Appointments
                 </a>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+</script>
 </body>
 </html>
