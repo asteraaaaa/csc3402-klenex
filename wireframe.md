@@ -1,6 +1,6 @@
-![Appointment](https://github.com/user-attachments/assets/4cd3a6fe-8adf-43b6-86ba-19f62c3b1535)![Doctor Dashboard](https://github.com/user-attachments/assets/bafbf623-b784-477d-8d9c-504606883823)
-![image](https://github.com/user-attachments/assets/8142fb09-6ee1-4c02-8954-0a5c0093ea78)
 ![image](https://github.com/user-attachments/assets/d2277f47-7607-4d99-84d7-55b28407903b)
+![Dashboard Doctor](https://github.com/user-attachments/assets/af02ce7a-6704-4a5a-a4fc-52f77f9ce780)
+![Dashboard Admin](https://github.com/user-attachments/assets/4173db71-6313-45c6-9dd3-9924b6acef9f)
 ![Doctor](https://github.com/user-attachments/assets/39316747-4a99-479c-8596-59990bb11fdf)
 ![Patient](https://github.com/user-attachments/assets/15c4332a-f5a8-41a3-a7c5-036660c7dca2)
 ![Medication](https://github.com/user-attachments/assets/8edadc83-55f0-4470-9694-acd3346d35bb)
