@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/d2277f47-7607-4d99-84d7-55b28407903b)
 ![Dashboard Doctor](https://github.com/user-attachments/assets/af02ce7a-6704-4a5a-a4fc-52f77f9ce780)
 ![Dashboard Admin](https://github.com/user-attachments/assets/4173db71-6313-45c6-9dd3-9924b6acef9f)
 ![Doctor](https://github.com/user-attachments/assets/39316747-4a99-479c-8596-59990bb11fdf)
