@@ -8,6 +8,6 @@ public interface PatientService {
     List<Patient> listAllPatients();
     Patient addNewPatient(Patient patient);
     Patient updatePatient(Patient patient);
-    void deletePatientById(int id); // Add this method
-    Optional<Patient> findPatientById(int id);
+    void deletePatientById(Integer id); // Add this method
+    Optional<Patient> findPatientById(Integer id);
 }

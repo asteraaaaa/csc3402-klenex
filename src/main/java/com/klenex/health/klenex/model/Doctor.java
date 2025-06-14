@@ -9,7 +9,7 @@ public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doctor_id")
-    private int doctorId;
+    private Integer doctorId;
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Appointment> appointments;
@@ -50,7 +50,7 @@ public class Doctor {
     public Doctor() {
     }
 
-    public Doctor(int doctorId, Set<Appointment> appointments, String name, String room, String phone, String email, String password, String street, String city, String state, String postcode, String country, String image) {
+    public Doctor(Integer doctorId, Set<Appointment> appointments, String name, String room, String phone, String email, String password, String street, String city, String state, String postcode, String country, String image) {
         this.doctorId = doctorId;
         this.appointments = appointments;
         this.name = name;
@@ -66,11 +66,11 @@ public class Doctor {
         this.image = image;
     }
 
-    public int getDoctorId() {
+    public Integer getDoctorId() {
         return doctorId;
     }
 
-    public void setDoctorId(int doctorId) {
+    public void setDoctorId(Integer doctorId) {
         this.doctorId = doctorId;
     }
 

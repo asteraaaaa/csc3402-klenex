@@ -11,7 +11,7 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "patient_id")
-    private int patientId;
+    private Integer patientId;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Appointment> appointments;
@@ -48,7 +48,7 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(int patientId, Set<Appointment> appointments, String name, String phone, String street, String city, String state, String postcode, String country, Date dob, Gender gender) {
+    public Patient(Integer patientId, Set<Appointment> appointments, String name, String phone, String street, String city, String state, String postcode, String country, Date dob, Gender gender) {
         this.patientId = patientId;
         this.appointments = appointments;
         this.name = name;
@@ -62,11 +62,11 @@ public class Patient {
         this.gender = gender;
     }
 
-    public int getPatientId() {
+    public Integer getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(int patientId) {
+    public void setPatientId(Integer patientId) {
         this.patientId = patientId;
     }
 

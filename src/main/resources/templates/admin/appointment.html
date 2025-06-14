@@ -25,7 +25,7 @@
                     <div class="form-group mb-0" style="min-width: 180px;">
                         <label for="searchBy" class="font-weight-bold">Search By</label>
                         <select class="form-control" id="searchBy">
-                            <option>Patient ID</option>
+                            <option>Patient Name</option>
                             <option>Appointment ID</option>
                             <option>Doctor ID</option>
                             <option>Date</option>
@@ -44,7 +44,6 @@
                 </form>
             </div>
         </div>
-
 
         <!-- Appointment Table -->
         <div class="card shadow-sm border-0 mb-4">
@@ -74,7 +73,7 @@
                             <td class="center-align" th:text="${appointment.id}"></td>
                             <td th:text="${appointment.patient != null} ? ${appointment.patient.Name} : 'N/A'">Name</td>
                             <td class="center-align">
-                                <span th:text="${#dates.format(appointment.date, 'dd-MM-yyyy')}"></span>
+                                <span th:text="${appointment.date instanceof T(java.time.LocalDate) ? #temporals.format(appointment.date, 'dd-MM-yyyy') : #dates.format(appointment.date, 'dd-MM-yyyy')}"></span>
                             </td>
                             <td class="center-align">
                                 <span th:text="${#dates.format(appointment.time, 'hh:mm a')}"></span>
