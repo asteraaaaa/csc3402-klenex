@@ -57,6 +57,7 @@
                         <tr>
                             <th class="center-align">ID</th>
                             <th>Patient Name</th>
+                            <th class="center-align">Doctor Room</th>
                             <th class="center-align">Date</th>
                             <th class="center-align">Time</th>
                             <th class="center-align">Status</th>
@@ -72,6 +73,7 @@
                         <tr th:each="appointment : ${appointments}">
                             <td class="center-align" th:text="${appointment.id}"></td>
                             <td th:text="${appointment.patient != null} ? ${appointment.patient.Name} : 'N/A'">Name</td>
+                            <td class="center-align" th:text="${appointment.doctor != null} ? ${appointment.doctor.room} : 'N/A'"></td>
                             <td class="center-align">
                                 <span th:text="${appointment.date instanceof T(java.time.LocalDate) ? #temporals.format(appointment.date, 'dd-MM-yyyy') : #dates.format(appointment.date, 'dd-MM-yyyy')}"></span>
                             </td>
