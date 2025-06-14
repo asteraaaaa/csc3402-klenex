@@ -82,20 +82,23 @@ public class AppointmentController {
         Appointment appointment = appointmentService.findAppointmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid appointment ID: " + id));
 
+        List<Patient> patients = patientService.listAllPatients();
+        List<Doctor> doctors = doctorService.listAllDoctors();
+
         model.addAttribute("appointment", appointment);
-        model.addAttribute("patients", patientService.listAllPatients());
-        model.addAttribute("doctors", doctorService.listAllDoctors());
+        model.addAttribute("patients", patients);
+        model.addAttribute("doctors", doctors);
         //model.addAttribute("treatments", treatmentService.findAllTreatments());
+        model.addAttribute("activePage", "appointment");
         return "appointment/update-appointment";
     }
 
     @PostMapping("update/{id}")
     public String updateAppointment(@PathVariable("id") Long id,
-                                    @Valid Appointment appointment,
+                                    @Valid @ModelAttribute("appointment") Appointment appointment,
                                     BindingResult result,
                                     Model model) {
         if (result.hasErrors()) {
-            appointment.setId(id);
             model.addAttribute("patients", patientService.listAllPatients());
             model.addAttribute("doctors", doctorService.listAllDoctors());
             //model.addAttribute("treatments", treatmentService.findAllTreatments());
