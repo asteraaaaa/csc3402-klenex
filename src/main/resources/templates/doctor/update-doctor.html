@@ -15,7 +15,7 @@
         <i class="fas fa-users"></i> Update Doctor
       </div>
       <div class="card-body">
-        <form th:action="@{/templates/doctor/update}" th:object="${doctor}" method="post">
+        <form th:action="@{/doctor/update/{id}(id=${doctor.doctorId})}" th:object="${doctor}" method="post">
           <div class="form-group col-md-12">
             <label for="name">Name</label>
             <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Doctor Name">

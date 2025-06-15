@@ -43,13 +43,6 @@ public class DoctorController {
         return "redirect:/doctor";
     }
 
-    @GetMapping("update")
-    public String showUpdateMainForm(Model model) {
-        model.addAttribute("activePage", "doctor");
-        model.addAttribute("doctors", doctorRepository.findAll());
-        return "doctor/choose-doctor-to-update";
-    }
-
     @GetMapping("update/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         Doctor doctor = doctorRepository.findById((int) id)
@@ -65,8 +58,9 @@ public class DoctorController {
             return "doctor/update-doctor";
         }
 
+        doctor.setDoctorId((int) id);
         doctorRepository.save(doctor);
-        return "redirect:/doctor/update";
+        return "redirect:/doctor";
     }
 
     @GetMapping("delete")
