@@ -15,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -128,5 +131,53 @@ public class AppointmentController {
         model.addAttribute("appointment", appointment.get());
         model.addAttribute("activePage", "appointment");
         return "appointment/view-appointment";
+    }
+
+    @GetMapping("/search")
+    public String searchAppointments(
+            @RequestParam(required = false) String searchBy,
+            @RequestParam(required = false) String searchTerm,
+            Model model) {
+
+        List<Appointment> appointments;
+
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            switch (searchBy) {
+                case "patientName":
+                    appointments = appointmentService.findByPatientNameContainingIgnoreCase(searchTerm);
+                    break;
+                case "appointmentId":
+                    try {
+                        Long id = Long.parseLong(searchTerm);
+                        appointments = appointmentService.findAppointmentById(id)
+                                .map(List::of)
+                                .orElse(Collections.emptyList());
+                    } catch (NumberFormatException e) {
+                        appointments = Collections.emptyList();
+                    }
+                    break;
+                case "date":
+                    try {
+                        LocalDate date = LocalDate.parse(searchTerm);
+                        appointments = appointmentService.findByDate(date);
+                    } catch (DateTimeParseException e) {
+                        appointments = Collections.emptyList();
+                    }
+                    break;
+                case "time":
+                    appointments = appointmentService.findByTimeContaining(searchTerm);
+                    break;
+                case "status":
+                    appointments = appointmentService.findByStatus(searchTerm);
+                    break;
+                default:
+                    appointments = appointmentService.listAllAppointments();
+            }
+        } else {
+            appointments = appointmentService.listAllAppointments();
+        }
+
+        model.addAttribute("appointments", appointments);
+        return "admin/appointment"; // Your template name
     }
 }

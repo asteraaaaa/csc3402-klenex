@@ -3,6 +3,8 @@ package com.klenex.health.klenex.service;
 import com.klenex.health.klenex.model.Appointment;
 import com.klenex.health.klenex.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,5 +39,30 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public Optional<Appointment> findAppointmentById(Long id){
         return appointmentRepository.findById(id);
+    }
+
+    @Override
+    public List<Appointment> findByDoctorId(Long doctorId) {
+        return List.of();
+    }
+
+    @Override
+    public List<Appointment> findByDate(LocalDate date) {
+        return List.of();
+    }
+
+    @Override
+    public List<Appointment> findByTimeContaining(String time) {
+        return List.of();
+    }
+
+    @Override
+    public List<Appointment> findByStatus(String status) {
+        return List.of();
+    }
+
+    @Override
+    public List<Appointment> findByPatientNameContainingIgnoreCase(String searchTerm) {
+        return List.of();
     }
 }
