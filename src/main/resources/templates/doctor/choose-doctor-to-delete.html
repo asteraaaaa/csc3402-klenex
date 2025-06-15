@@ -58,7 +58,7 @@
                         <span th:text="${doctor.postcode}"></span>
                     </td>
                     <td>
-                        <form th:action="@{/doctors/delete/{id}(id=${doctor.doctorId})}" method="post">
+                        <form th:action="@{/templates/doctor/delete/{id}(id=${doctor.doctorId})}" method="post">
                             <button type="submit" class="btn btn-danger"
                                     onclick="return confirm('Are you sure?')">
                                 <i class="fas fa-user-times ml-2"></i>

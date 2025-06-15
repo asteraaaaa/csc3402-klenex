@@ -85,13 +85,13 @@
                         <td th:text="${doctor.street + ', ' + doctor.city + ', ' + doctor.state + ', ' + doctor.postcode + ', ' + doctor.country}"></td>
                         <td class="text-nowrap">
                             <button class="btn btn-info btn-sm me-2">👁️</button>
-                            <form th:action="@{/doctors/update/{id}(id=${doctor.doctorId})}" method="get" style="display: inline;">
+                            <form th:action="@{/templates/doctor/update/{id}(id=${doctor.doctorId})}" method="get" style="display: inline;">
                                 <button type="submit" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i> ✏️
                                 </button>
                             </form>
 
-                            <form th:action="@{/doctors/delete/{id}(id=${doctor.doctorId})}" method="post" style="display: inline;">
+                            <form th:action="@{/templates/doctor/delete/{id}(id=${doctor.doctorId})}" method="post" style="display: inline;">
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?');">
                                     <i class="fas fa-trash-alt"></i> 🗑️
                                 </button>
@@ -105,7 +105,7 @@
 
         <!-- Add New Button -->
         <div class="card-footer text-right bg-white ">
-            <form th:action="@{/doctors/signup}" method="get" class="d-inline">
+            <form th:action="@{/templates/doctor/signup}" method="get" class="d-inline">
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-plus-circle"></i> Add New Doctor
                 </button>

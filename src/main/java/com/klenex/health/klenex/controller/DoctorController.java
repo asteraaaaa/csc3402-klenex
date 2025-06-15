@@ -30,24 +30,17 @@ public class DoctorController {
     public String showSignUpForm(Model model) {
         model.addAttribute("activePage", "doctor");
         model.addAttribute("doctor", new Doctor());
-        return "doctors/add-doctor";
+        return "doctor/add-doctor";
     }
 
     @PostMapping("add")
     public String addDoctor(@Valid Doctor doctor, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return "doctors/add-doctor";
+            return "doctor/add-doctor";
         }
 
         doctorRepository.save(doctor);
         return "redirect:/doctor";
-    }
-
-    @GetMapping("update")
-    public String showUpdateMainForm(Model model) {
-        model.addAttribute("activePage", "doctor");
-        model.addAttribute("doctors", doctorRepository.findAll());
-        return "doctors/choose-doctor-to-update";
     }
 
     @GetMapping("update/{id}")
@@ -55,24 +48,25 @@ public class DoctorController {
         Doctor doctor = doctorRepository.findById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid doctor Id:" + id));
         model.addAttribute("doctor", doctor);
-        return "doctors/update-doctor";
+        return "doctor/update-doctor";
     }
 
     @PostMapping("update/{id}")
     public String updateDoctor(@PathVariable("id") long id, @Valid Doctor doctor, BindingResult result, Model model) {
         if (result.hasErrors()) {
             doctor.setDoctorId((int) id);
-            return "doctors/update-doctor";
+            return "doctor/update-doctor";
         }
 
+        doctor.setDoctorId((int) id);
         doctorRepository.save(doctor);
-        return "redirect:/doctor/update";
+        return "redirect:/doctor";
     }
 
     @GetMapping("delete")
     public String showDeleteMainForm(Model model) {
         model.addAttribute("doctors", doctorRepository.findAll());
-        return "doctors/choose-doctor-to-delete";
+        return "doctor/choose-doctor-to-delete";
     }
 
     @GetMapping("delete/{id}")

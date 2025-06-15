@@ -15,7 +15,37 @@
                 <i class="fas fa-users"></i> Update Appointment
             </div>
             <div class="card-body">
-                <form th:action="@{/appointment/add}" th:object="${appointment}" method="post">
+                <form th:action="@{/appointment/update/{id}(id=${appointment.id})}" th:object="${appointment}" method="post">
+
+                    <!-- Patient Selection -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="patient">Patient</label>
+                            <select th:field="*{patient.patientId}" class="form-control" id="patient" required>
+                                <option value="">-- Select Patient --</option>
+                                <option th:each="patient : ${patients}"
+                                        th:value="${patient.patientId}"
+                                        th:text="${patient.name + ' (ID: ' + patient.patientId + ')'}"
+                                        th:selected="${appointment.patient != null && appointment.patient.patientId == patient.patientId}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Doctor Selection -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="doctor">Doctor</label>
+                            <select th:field="*{doctor.doctorId}" class="form-control" id="doctor" required>
+                                <option value="">-- Select Doctor --</option>
+                                <option th:each="doctor : ${doctors}"
+                                        th:value="${doctor.doctorId}"
+                                        th:text="${doctor.name + ' (Room: ' + doctor.room + ')'}"
+                                        th:selected="${appointment.doctor != null && appointment.doctor.doctorId == doctor.doctorId}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
