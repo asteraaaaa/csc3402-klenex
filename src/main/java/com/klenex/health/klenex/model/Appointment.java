@@ -1,11 +1,9 @@
 package com.klenex.health.klenex.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 import java.sql.Date;
 import java.sql.Time;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "appointments")
@@ -15,12 +13,10 @@ public class Appointment {
     @Column(name = "appointment_id")
     private Long id;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
@@ -29,7 +25,7 @@ public class Appointment {
     private Treatment treatment;
 
     @Column(name = "date")
-    private LocalDate date;
+    private Date date;
 
     @Column(name = "time")
     private Time time;
@@ -44,7 +40,7 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(Long id, Doctor doctor, Patient patient, Treatment treatment, LocalDate date, Time time, AppointmentStatus status, String remark) {
+    public Appointment(Long id, Doctor doctor, Patient patient, Treatment treatment, Date date, Time time, AppointmentStatus status, String remark) {
         this.id = id;
         this.doctor = doctor;
         this.patient = patient;
@@ -87,11 +83,11 @@ public class Appointment {
         this.patient = patient;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

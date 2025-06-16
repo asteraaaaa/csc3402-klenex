@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Update Treatment</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-bold">
+                <i class="fas fa-notes-medical me-2"></i>Update Treatment
+            </div>
+            <div class="card-body">
+                <form th:action="@{/treatment/update/{id}(id=${treatment.treatmentId})}"
+                      th:object="${treatment}" method="post">
+                    <input type="hidden" th:field="*{treatmentId}">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Appointment</label>
+                            <input type="text" class="form-control"
+                                   th:value="'Appt #' + ${treatment.appointment.appointmentId} + ' - ' + ${treatment.appointment.patient.name}"
+                                   readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label for="diagnosis" class="form-label">Diagnosis</label>
+                            <textarea th:field="*{diagnosis}" class="form-control" id="diagnosis"
+                                      rows="3" required></textarea>
+                            <div th:if="${#fields.hasErrors('diagnosis')}" class="invalid-feedback d-block">
+                                <span th:errors="*{diagnosis}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label for="prescription" class="form-label">Prescription</label>
+                            <textarea th:field="*{prescription}" class="form-control" id="prescription"
+                                      rows="5" required></textarea>
+                            <div th:if="${#fields.hasErrors('prescription')}" class="invalid-feedback d-block">
+                                <span th:errors="*{prescription}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label">Medications</label>
+                            <div class="border p-3 rounded">
+                                <div class="row">
+                                    <div th:each="med : ${medications}" class="col-md-4 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" th:field="*{medications}"
+                                                   th:value="${med.drugId}"
+                                                   class="form-check-input"
+                                                   th:id="${'med-' + med.drugId}">
+                                            <label th:for="${'med-' + med.drugId}"
+                                                   class="form-check-label"
+                                                   th:text="${med.name + ' (' + med.strength + ')'}"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="fas fa-save me-2"></i>Update
+                        </button>
+                        <a th:href="@{/treatment}" class="btn btn-secondary px-4">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

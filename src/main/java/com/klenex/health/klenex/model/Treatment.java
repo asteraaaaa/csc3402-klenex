@@ -1,6 +1,5 @@
 package com.klenex.health.klenex.model;
 
-import com.klenex.health.klenex.model.Patient;
 import jakarta.persistence.*;
 import java.util.Set;
 
