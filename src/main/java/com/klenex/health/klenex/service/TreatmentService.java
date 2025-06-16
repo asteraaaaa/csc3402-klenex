@@ -10,4 +10,10 @@ public interface TreatmentService {
     Treatment updateTreatment(Treatment treatment);
     void deleteTreatmentById(int id);
     Optional<Treatment> findTreatmentById(int id);
+
+    List<Treatment> findTreatmentsByDoctorId(int doctorId);
+
+    List<Treatment> findTreatmentsByPatientId(int patientId);
+    List<Treatment> searchTreatments(String keyword);
+
 }

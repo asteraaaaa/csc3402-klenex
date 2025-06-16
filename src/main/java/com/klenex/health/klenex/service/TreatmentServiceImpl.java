@@ -31,6 +31,21 @@ public class TreatmentServiceImpl implements TreatmentService {
     }
 
     @Override
+    public List<Treatment> findTreatmentsByPatientId(int patientId) {
+        return treatmentRepository.findByAppointmentPatientPatientId(patientId);
+    }
+
+    @Override
+    public List<Treatment> findTreatmentsByDoctorId(int doctorId) {
+        return treatmentRepository.findByAppointmentDoctorDoctorId(doctorId);
+    }
+
+    @Override
+    public List<Treatment> searchTreatments(String keyword) {
+        return treatmentRepository.searchByKeyword(keyword);
+    }
+
+    @Override
     public Treatment updateTreatment(Treatment treatment) {
         return treatmentRepository.save(treatment);
     }
