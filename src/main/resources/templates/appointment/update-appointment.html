@@ -3,95 +3,135 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>Update AppointmentS</title>
+    <title>Update Patient</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+
 </head>
 <body>
 <div layout:fragment="content">
     <div class="container py-0">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-light font-weight-bold">
-                <i class="fas fa-users"></i> Update Appointment
+        <!-- Patient Information Card -->
+        <div class="card shadow-sm border-0 mb-4" >
+            <div class="card-header bg-light font-weight-bold d-flex">
+                <span><i class="fas fa-user"></i> Patient Information</span>
             </div>
+
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Full Name:</div>
+                    <div class="col-sm-8" th:text="${appointment.patient.name}">John Doe</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Birth Date:</div>
+                    <div class="col-sm-8" th:text="${#dates.format(appointment.patient.dob, 'dd/MM/yyyy')}">01/01/1990</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Gender:</div>
+                    <div class="col-sm-8" th:text="${appointment.patient.gender}">Male</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Phone Number:</div>
+                    <div class="col-sm-8" th:text="${appointment.patient.phone}">012-3456789</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Address:</div>
+                    <div class="col-sm-8">
+                        <span th:text="${appointment.patient.street}">123 Main St</span>,
+                        <span th:text="${appointment.patient.postcode}">12345</span>,
+                        <span th:text="${appointment.patient.city}">Kuala Lumpur</span>,
+                        <span th:text="${appointment.patient.state}">Selangor</span>,
+                        <span th:text="${appointment.patient.country}">Malaysia</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4" >
+            <div class="card-header bg-light font-weight-bold d-flex ">
+                <span><i class="fas fa-calendar-plus"></i> Add New Appointment</span>
+            </div>
+
             <div class="card-body">
                 <form th:action="@{/appointment/update/{id}(id=${appointment.id})}" th:object="${appointment}" method="post">
+                    <!-- Critical hidden fields -->
+                    <input type="hidden" name="patientId" th:value="${appointment.patient.patientId}" />
+                    <input type="hidden" name="patientOption" value="existing" />
 
-                    <!-- Patient Selection -->
                     <div class="form-row">
+                        <!-- Doctor Selection -->
                         <div class="form-group col-md-6">
-                            <label for="patient">Patient</label>
-                            <select th:field="*{patient.patientId}" class="form-control" id="patient" required>
-                                <option value="">-- Select Patient --</option>
-                                <option th:each="patient : ${patients}"
-                                        th:value="${patient.patientId}"
-                                        th:text="${patient.name + ' (ID: ' + patient.patientId + ')'}"
-                                        th:selected="${appointment.patient != null && appointment.patient.patientId == patient.patientId}">
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Doctor Selection -->
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="doctor">Doctor</label>
+                            <label for="doctor" class="required-field">Doctor</label>
                             <select th:field="*{doctor.doctorId}" class="form-control" id="doctor" required>
                                 <option value="">-- Select Doctor --</option>
                                 <option th:each="doctor : ${doctors}"
                                         th:value="${doctor.doctorId}"
-                                        th:text="${doctor.name + ' (Room: ' + doctor.room + ')'}"
-                                        th:selected="${appointment.doctor != null && appointment.doctor.doctorId == doctor.doctorId}">
+                                        th:text="${doctor.name + ' (Room: ' + doctor.room + ')'}">
                                 </option>
                             </select>
+                            <span th:if="${#fields.hasErrors('doctor.doctorId')}"
+                                  th:errors="*{doctor.doctorId}"
+                                  class="text-danger"></span>
                         </div>
-                    </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="date">Date</label>
-                            <input type="date" th:field="*{date}" class="form-control" id="date">
-                            <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="text-danger"></span>
+                        <!-- Date and Time -->
+                        <div class="form-group col-md-2">
+                            <label for="date" class="required-field">Date</label>
+                            <input type="date" th:field="*{date}" class="form-control" id="date" required>
+                            <span th:if="${#fields.hasErrors('date')}"
+                                  th:errors="*{date}"
+                                  class="text-danger"></span>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label for="time">Time</label>
-                            <input type="time" th:field="*{time}" class="form-control" id="time">
+
+
+                        <div class="form-group col-md-2">
+                            <label for="time" class="required-field">Time</label>
+                            <!-- Ensure the name attribute matches your object property -->
+                            <input type="time"
+                                   class="form-control"
+                                   id="time"
+                                   name="time"
+                                   th:attr="value=${appointment.time != null ? appointment.time : ''}" />
+
                             <span th:if="${#fields.hasErrors('time')}" th:errors="*{time}" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="status">Status</label>
-                            <select th:field="*{status}" class="form-control" id="status">
-                                <option value="">-- Select Status --</option>
-                                <option value="Scheduled">Scheduled</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Cancelled">Cancelled</option>
+                        <div class="form-group col-md-2" id="statusDropDown">
+                            <label for="SelectStatus" class="required-field">Status</label>
+                            <select th:field="*{status}" class="form-control" id="SelectStatus" required>
+                                <option th:each="stat : ${T(com.klenex.health.klenex.model.AppointmentStatus).values()}"
+                                        th:value="${stat}"
+                                        th:text="${stat}">
+                                </option>
                             </select>
                             <span th:if="${#fields.hasErrors('status')}" th:errors="*{status}" class="text-danger"></span>
                         </div>
+
+
                     </div>
+
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="remark">Remark</label>
-                            <textarea th:field="*{remark}" class="form-control" id="remark" placeholder="Any notes or remarks"></textarea>
+                            <textarea th:field="*{remark}" class="form-control" id="remark"
+                                      placeholder="Any notes or remarks"></textarea>
                         </div>
                     </div>
 
                     <div class="form-group d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-success">Save</button>
-                        <button type="reset" class="btn btn-secondary">Reset</button>
-                        <a class="btn btn-danger" th:href="@{/appointment}">Cancel</a>
+                        <a class="btn btn-danger" th:href="@{/appointment/delete/{id}(id=${appointment.id})}">Delete</a>
+                        <button type="submit" class="btn btn-success">Update</button>
+                        <a class="btn btn-dark" th:href="@{/appointment/view/{id}(id=${appointment.id})}">Cancel</a>
                     </div>
-
                 </form>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

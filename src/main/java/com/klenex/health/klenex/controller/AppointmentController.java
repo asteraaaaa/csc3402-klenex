@@ -1,7 +1,6 @@
 package com.klenex.health.klenex.controller;
 
 import com.klenex.health.klenex.model.Appointment;
-import com.klenex.health.klenex.model.Doctor;
 import com.klenex.health.klenex.model.Patient;
 import com.klenex.health.klenex.service.AppointmentService;
 import com.klenex.health.klenex.service.DoctorService;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -116,8 +114,9 @@ public class AppointmentController {
 
     @PostMapping("/update/{id}")
     public String updateAppointment(@PathVariable("id") Long id,
-                                    @Valid Appointment appointment,
+                                    @Valid @ModelAttribute("appointment") Appointment appointment,
                                     BindingResult result,
+                                    @RequestParam("patientId") Integer patientId,
                                     Model model) {
         if (result.hasErrors()) {
             appointment.setId(id);
@@ -126,9 +125,13 @@ public class AppointmentController {
             return "appointment/update-appointment";
         }
 
+        // 🔒 Prevent updating patient by reattaching the existing one
+        Optional<Patient> existingPatient = patientService.findPatientById(patientId);
+        appointment.setPatient(existingPatient.orElse(null));
+
         appointment.setId(id);
         appointmentService.updateAppointment(appointment);
-        return "redirect:/appointment";
+        return "redirect:/appointment/view/{id}";
     }
 
     @PostMapping("/delete/{id}")
