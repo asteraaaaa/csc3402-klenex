@@ -63,12 +63,6 @@ public class DoctorController {
         return "redirect:/doctor";
     }
 
-    @GetMapping("delete")
-    public String showDeleteMainForm(Model model) {
-        model.addAttribute("doctors", doctorRepository.findAll());
-        return "doctor/choose-doctor-to-delete";
-    }
-
     @GetMapping("delete/{id}")
     public String deleteDoctor(@PathVariable("id") long id, Model model) {
         Doctor doctor = doctorRepository.findById((int) id)

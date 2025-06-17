@@ -59,7 +59,8 @@
                     </div>
 
                     <div class="form-group d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-success">Update</button>
+                        <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                        <button type="submit" name="action" value="update" class="btn btn-success">Update</button>
                         <a class="btn btn-secondary" th:href="@{/medication}">Cancel</a>
                     </div>
                 </form>

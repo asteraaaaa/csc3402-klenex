@@ -1,5 +1,6 @@
 package com.klenex.health.klenex.controller;
 
+import com.klenex.health.klenex.model.Medication;
 import com.klenex.health.klenex.model.Patient;
 import com.klenex.health.klenex.model.Treatment;
 import com.klenex.health.klenex.service.PatientService;
@@ -8,10 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -70,17 +68,22 @@ public class PatientController {
     }
 
     @PostMapping("update/{id}")
-    public String updatePatient(@PathVariable("id") long id, @Valid Patient patient,
-                                BindingResult result, Model model) {
+    public String updatePatient(@PathVariable("id") long id, @RequestParam("action") String action,
+                                @Valid Patient patient, BindingResult result, Model model) {
+        if ("delete".equals(action)) {
+            patientService.deletePatientById((int) id);
+            return "redirect:/patient";
+        }
+
         if (result.hasErrors()) {
             patient.setPatientId((int) id);
             return "patient/update-patient";
         }
+
         patient.setPatientId((int) id);
         patientService.updatePatient(patient);
         return "redirect:/patient";
     }
-
 
     @GetMapping("view/{id}")
     public String viewPatient(@PathVariable("id") long id, Model model) {

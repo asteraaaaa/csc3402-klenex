@@ -1,7 +1,9 @@
 package com.klenex.health.klenex.service;
 
 import com.klenex.health.klenex.model.Medication;
+import com.klenex.health.klenex.model.Treatment;
 import com.klenex.health.klenex.repository.MedicationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +39,21 @@ public class MedicationServiceImpl implements MedicationService {
 
     @Override
     public void deleteMedicationById(int id) {
-        medicationRepository.deleteById(id);
+        Optional<Medication> optionalMedication = medicationRepository.findById(id);
+        if (optionalMedication.isPresent()) {
+            Medication medication = optionalMedication.get();
+
+            // Break the @ManyToMany relationship from both sides
+            for (Treatment treatment : medication.getTreatments()) {
+                treatment.getMedications().remove(medication);
+            }
+
+            medication.getTreatments().clear(); // Clear the set in Medication too
+
+            medicationRepository.delete(medication);
+        } else {
+            throw new EntityNotFoundException("Medication with ID " + id + " not found.");
+        }
     }
+
 }

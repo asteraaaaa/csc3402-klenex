@@ -53,16 +53,26 @@ public class MedicationController {
     }
 
     @PostMapping("update/{id}")
-    public String updateMedication(@PathVariable("id") long id, @Valid Medication medication,
-                                 BindingResult result, Model model) {
+    public String updateMedication(@PathVariable("id") long id,
+                                         @RequestParam("action") String action,
+                                         @Valid Medication medication,
+                                         BindingResult result,
+                                         Model model) {
+        if ("delete".equals(action)) {
+            medicationService.deleteMedicationById((int) id);
+            return "redirect:/medication";
+        }
+
         if (result.hasErrors()) {
             medication.setDrugId((int) id);
             return "medication/update-medication";
         }
+
         medication.setDrugId((int) id);
         medicationService.updateMedication(medication);
         return "redirect:/medication";
     }
+
 
     @PostMapping("delete/{id}")
     public String deleteMedication(@PathVariable("id") int id) {

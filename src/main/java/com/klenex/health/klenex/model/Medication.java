@@ -2,12 +2,17 @@ package com.klenex.health.klenex.model;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 public class Medication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "drug_id")
     private int drugId;
+
+    @ManyToMany(mappedBy = "medications")
+    private Set<Treatment> treatments;
 
     @Column(name = "name")
     private String name;
@@ -84,6 +89,14 @@ public class Medication {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public Set<Treatment> getTreatments() {
+        return treatments;
+    }
+
+    public void setTreatments(Set<Treatment> treatments) {
+        this.treatments = treatments;
     }
 
     @Override
