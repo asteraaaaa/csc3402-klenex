@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title>Add Patient</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container py-0">
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-light font-weight-bold">
+        <i class="fas fa-user-plus"></i> Add New Patient
+      </div>
+      <div class="card-body">
+        <form th:action="@{/patient/add}" th:object="${patient}" method="post">
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="name">Full Name</label>
+              <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Patient Full Name">
+              <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="gender">Gender</label>
+              <input type="text" th:field="*{gender}" class="form-control" id="gender" placeholder="Gender">
+              <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="phone">Phone Number</label>
+              <input type="text" th:field="*{phone}" class="form-control" id="phone" placeholder="Phone Number">
+              <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="dob">Date of Birth</label>
+              <input type="date" th:field="*{dob}" class="form-control" id="dob" placeholder="YYYY-MM-DD">
+              <span th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}" class="text-danger"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="street">Street</label>
+              <input type="text" th:field="*{street}" class="form-control" id="street" placeholder="Street">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="city">City</label>
+              <input type="text" th:field="*{city}" class="form-control" id="city" placeholder="City">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="postcode">Postcode</label>
+              <input type="text" th:field="*{postcode}" class="form-control" id="postcode" placeholder="Postcode">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="state">State</label>
+              <input type="text" th:field="*{state}" class="form-control" id="state" placeholder="State">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="country">Country</label>
+              <input type="text" th:field="*{country}" class="form-control" id="country" placeholder="Country">
+            </div>
+          </div>
+
+          <div class="form-group d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+            <a class="btn btn-danger" th:href="@{/patient}">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Font Awesome & Bootstrap JS -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
