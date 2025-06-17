@@ -47,7 +47,7 @@ public class PatientController {
         }
 
         patientService.addNewPatient(patient);
-        return "redirect:/patient";
+        return "redirect:/appointment/signup";
     }
 
     @GetMapping("update")

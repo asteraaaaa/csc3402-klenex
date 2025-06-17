@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "appointments")
@@ -28,7 +29,7 @@ public class Appointment {
     private Date date;
 
     @Column(name = "time")
-    private Time time;
+    private LocalTime time;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -40,7 +41,7 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(Long id, Doctor doctor, Patient patient, Treatment treatment, Date date, Time time, AppointmentStatus status, String remark) {
+    public Appointment(Long id, Doctor doctor, Patient patient, Treatment treatment, Date date, LocalTime time, AppointmentStatus status, String remark) {
         this.id = id;
         this.doctor = doctor;
         this.patient = patient;
@@ -91,11 +92,11 @@ public class Appointment {
         this.date = date;
     }
 
-    public Time getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(Time time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 

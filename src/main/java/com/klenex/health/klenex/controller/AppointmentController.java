@@ -67,17 +67,19 @@ public class AppointmentController {
     @PostMapping("/add")
     public String addAppointment(@ModelAttribute("appointment") Appointment appointment,
                                  @RequestParam(required = false) Integer patientId,
-                                 @RequestParam(required = false) String patientOption,
                                  @ModelAttribute Patient patient,
                                  BindingResult result,
                                  Model model) {
+
         if (result.hasErrors()) {
             model.addAttribute("patients", patientService.listAllPatients());
             model.addAttribute("doctors", doctorService.listAllDoctors());
             return "appointment/add-appointment";
         }
 
-        if ("existing".equals(patientOption) && patientId != null) {
+        // Modified patient handling logic
+        if (patientId != null) {
+            // Existing patient
             Optional<Patient> existing = patientService.findPatientById(patientId);
             if (existing.isPresent()) {
                 appointment.setPatient(existing.get());
@@ -86,7 +88,7 @@ public class AppointmentController {
                 return "appointment/add-appointment";
             }
         } else {
-            // Save new patient
+            // New patient
             Patient savedPatient = patientService.addNewPatient(patient);
             appointment.setPatient(savedPatient);
         }

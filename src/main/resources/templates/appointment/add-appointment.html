@@ -121,17 +121,14 @@
             </script>
 
 
-
-
         </div>
-
-        <div class="card shadow-sm border-0 mb-4" >
-
+        <!-- Patient Information Card -->
+        <div class="card shadow-sm border-0 mb-4" th:if="${patient != null}">
             <div class="card-header bg-light font-weight-bold d-flex">
-                <span><i class="fas fa-users"></i> Patient Information</span>
+                <span><i class="fas fa-user"></i> Patient Information</span>
             </div>
 
-            <div class="card-body" >
+            <div class="card-body">
                 <div class="row mb-2">
                     <div class="col-sm-2 text-muted">Full Name:</div>
                     <div class="col-sm-8" th:text="${patient.name}">John Doe</div>
@@ -158,70 +155,86 @@
                         <span th:text="${patient.country}">Malaysia</span>
                     </div>
                 </div>
-
             </div>
         </div>
 
-
-        <div class="card shadow-sm border-0 mb-4">
+        <!-- Only show appointment form when patient is selected -->
+        <div class="card shadow-sm border-0 mb-4" th:if="${patient != null}">
             <div class="card-header bg-light font-weight-bold d-flex ">
-                <span><i class="fas fa-users"></i> Add New Appointment</span>
+                <span><i class="fas fa-calendar-plus"></i> Add New Appointment</span>
             </div>
 
             <div class="card-body">
-                <!-- Form Starts -->
                 <form th:action="@{/appointment/add}" th:object="${appointment}" method="post">
-                    <input type="hidden" th:field="*{patient.patientId}" th:value="${patient.patientId}" />
-                    <input type="hidden" name="patientOption" id="patientOptionInput">
+                    <!-- Critical hidden fields -->
+                    <input type="hidden" name="patientId" th:value="${patient.patientId}" />
+                    <input type="hidden" name="patientOption" value="existing" />
 
                     <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="doctor">Doctor</label>
-                        <select th:field="*{doctor.doctorId}" class="form-control" id="doctor" required>
-                            <option value="">-- Select Doctor --</option>
-                            <option th:each="doctor : ${doctors}"
-                                    th:value="${doctor.doctorId}"
-                                    th:text="${doctor.name + ' (Room: ' + doctor.room + ')'}">
-                            </option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="date">Date</label>
-                        <input type="date" th:field="*{date}" class="form-control" id="date">
-                        <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="time">Time</label>
-                        <input type="time" th:field="*{time}" class="form-control" id="time">
-                        <span th:if="${#fields.hasErrors('time')}" th:errors="*{time}" class="text-danger"></span>
-                    </div>
-                </div>
+                        <!-- Doctor Selection -->
+                        <div class="form-group col-md-6">
+                            <label for="doctor" class="required-field">Doctor</label>
+                            <select th:field="*{doctor.doctorId}" class="form-control" id="doctor" required>
+                                <option value="">-- Select Doctor --</option>
+                                <option th:each="doctor : ${doctors}"
+                                        th:value="${doctor.doctorId}"
+                                        th:text="${doctor.name + ' (Room: ' + doctor.room + ')'}">
+                                </option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('doctor.doctorId')}"
+                                  th:errors="*{doctor.doctorId}"
+                                  class="text-danger"></span>
+                        </div>
 
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                        <label for="remark">Remark</label>
-                        <textarea th:field="*{remark}" class="form-control" id="remark" placeholder="Any notes or remarks"></textarea>
+                        <!-- Date and Time -->
+                        <div class="form-group col-md-3">
+                            <label for="date" class="required-field">Date</label>
+                            <input type="date" th:field="*{date}" class="form-control" id="date" required>
+                            <span th:if="${#fields.hasErrors('date')}"
+                                  th:errors="*{date}"
+                                  class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="time" class="required-field">Time</label>
+                            <!-- Ensure the name attribute matches your object property -->
+                            <input type="time" th:field="*{time}" class="form-control" id="time" required>
+                            <span th:if="${#fields.hasErrors('time')}" th:errors="*{time}" class="text-danger"></span>
+                        </div>
+
                     </div>
-                </div>
 
-                <div class="form-group d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-success">Save</button>
-                    <button type="reset" class="btn btn-secondary">Reset</button>
-                    <a class="btn btn-danger" th:href="@{/appointment}">Cancel</a>
-                </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="remark">Remark</label>
+                            <textarea th:field="*{remark}" class="form-control" id="remark"
+                                      placeholder="Any notes or remarks"></textarea>
+                        </div>
+                    </div>
 
+                    <div class="form-group d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-success">Save Appointment</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                        <a class="btn btn-danger" th:href="@{/appointment}">Cancel</a>
+                    </div>
                 </form>
-                <!-- Form Ends -->
-
             </div>
         </div>
 
+        <!-- Show message when no patient is selected -->
+        <div class="alert alert-info" th:if="${patient == null}">
+            <i class="fas fa-info-circle"></i> Please select a patient to schedule an appointment.
+        </div>
     </div>
 </div>
 
-<!-- Font Awesome & Bootstrap JS -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 for patient dropdown
+        $('#patientSelect').select2({
+            placeholder: "Search patient",
+            allowClear: true
+        });
+    });
+</script>
 </body>
 </html>

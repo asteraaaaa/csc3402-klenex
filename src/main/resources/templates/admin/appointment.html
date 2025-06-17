@@ -82,7 +82,7 @@
                                 <span th:text="${appointment.date instanceof T(java.time.LocalDate) ? #temporals.format(appointment.date, 'dd-MM-yyyy') : #dates.format(appointment.date, 'dd-MM-yyyy')}"></span>
                             </td>
                             <td class="center-align">
-                                <span th:text="${#dates.format(appointment.time, 'hh:mm a')}"></span>
+                                <span th:text="${appointment.time}"></span>
                             </td>
                             <td class="center-align" th:text="${appointment.status}"></td>
                         <!--    <td class="center-align">
