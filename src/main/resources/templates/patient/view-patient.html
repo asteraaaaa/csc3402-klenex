@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Patient Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-4">
+        <div class="mb-2">
+            <a th:href="@{/patient}" class="text-decoration-none text-dark" title="Back">
+                <i class="fas fa-arrow-left mr-1"></i> Back
+            </a>
+        </div>
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-light font-weight-bold d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-users"></i> Patient Information</span>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/patient/update/{id}(id=${patient.patientId})}"
+                       class="text-black"
+                       title="Edit Patient">
+                        <i class="fas fa-edit fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Full Name:</div>
+                    <div class="col-sm-8" th:text="${patient.name}">John Doe</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Birth Date:</div>
+                    <div class="col-sm-8" th:text="${#dates.format(patient.dob, 'dd/MM/yyyy')}">01/01/1990</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Gender:</div>
+                    <div class="col-sm-8" th:text="${patient.gender}">Male</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Phone Number:</div>
+                    <div class="col-sm-8" th:text="${patient.phone}">012-3456789</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Address:</div>
+                    <div class="col-sm-8">
+                        <span th:text="${patient.street}">123 Main St</span>,
+                        <span th:text="${patient.postcode}">12345</span>,
+                        <span th:text="${patient.city}">Kuala Lumpur</span>,
+                        <span th:text="${patient.state}">Selangor</span>,
+                        <span th:text="${patient.country}">Malaysia</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

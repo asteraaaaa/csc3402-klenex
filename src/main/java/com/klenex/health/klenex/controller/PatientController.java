@@ -76,6 +76,15 @@ public class PatientController {
     }
 
 
+    @GetMapping("view/{id}")
+    public String viewPatient(@PathVariable("id") long id, Model model) {
+        model.addAttribute("activePage", "patient");
+        Patient patient = patientService.findPatientById((int) id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + (int) id));
+
+        model.addAttribute("patient", patient);
+        return "patient/view-patient";
+    }
 
     @PostMapping("delete/{id}")
     public String deletePatient(@PathVariable("id") int id) {
