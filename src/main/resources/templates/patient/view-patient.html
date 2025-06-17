@@ -147,10 +147,10 @@
                     <div class="col-sm-4">
 
                             <div th:switch="${treatment.appointment.status.name()}">
-                                <span th:case="'PENDING'" class="badge bg-warning text-dark" th:text="${treatment.appointment.status.name()}">PENDING</span>
-                                <span th:case="'CONFIRMED'" class="badge bg-primary" th:text="${treatment.appointment.status.name()}">CONFIRMED</span>
-                                <span th:case="'COMPLETED'" class="badge bg-success" th:text="${treatment.appointment.status.name()}">COMPLETED</span>
-                                <span th:case="'CANCELLED'" class="badge bg-danger" th:text="${treatment.appointment.status.name()}">CANCELLED</span>
+                                <span th:case="'Scheduled'" class="badge bg-warning text-dark" th:text="${treatment.appointment.status.name()}">Scheduled</span>
+                                <span th:case="'Comfirmed'" class="badge bg-primary" th:text="${treatment.appointment.status.name()}">Comfirmed</span>
+                                <span th:case="'Completed'" class="badge bg-success" th:text="${treatment.appointment.status.name()}">Completed</span>
+                                <span th:case="'Canceled'" class="badge bg-danger" th:text="${treatment.appointment.status.name()}">Canceled</span>
                                 <span th:case="*" class="badge bg-secondary" th:text="${treatment.appointment.status.name()}">UNKNOWN</span>
                             </div>
 

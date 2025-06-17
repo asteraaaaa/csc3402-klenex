@@ -51,30 +51,30 @@ public class TreatmentController {
         return "admin/treatment";
     }
 
-    @GetMapping("/patient/{id}")
-    public String listTreatmentsByPatient(@PathVariable("id") int id, Model model) {
-        Patient patient = patientService.findPatientById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + id));
-
-
-        model.addAttribute("treatments", treatmentService.listAllTreatments());
-        model.addAttribute("patient", patient);
-        model.addAttribute("activePage", "treatment");
-        return "treatment/view-patient-treatment";
-    }
-
-    @GetMapping("/doctor/{id}")
-    public String listTreatmentsByDoctor(@PathVariable("id") int id, Model model) {
-        Doctor doctor = doctorService.findDoctorById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid doctor ID: " + id));
-
-        List<Treatment> doctorTreatments = treatmentService.findTreatmentsByDoctorId(id);
-
-        model.addAttribute("doctor", doctor);
-        model.addAttribute("treatments", doctorTreatments);
-        model.addAttribute("activePage", "treatment");
-        return "admin/view-doctor-treatment";
-    }
+//    @GetMapping("/patient/{id}")
+//    public String listTreatmentsByPatient(@PathVariable("id") int id, Model model) {
+//        Patient patient = patientService.findPatientById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + id));
+//
+//
+//        model.addAttribute("treatments", treatmentService.listAllTreatments());
+//        model.addAttribute("patient", patient);
+//        model.addAttribute("activePage", "treatment");
+//        return "treatment/view-patient-treatment";
+//    }
+//
+//    @GetMapping("/doctor/{id}")
+//    public String listTreatmentsByDoctor(@PathVariable("id") int id, Model model) {
+//        Doctor doctor = doctorService.findDoctorById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid doctor ID: " + id));
+//
+//        List<Treatment> doctorTreatments = treatmentService.findTreatmentsByDoctorId(id);
+//
+//        model.addAttribute("doctor", doctor);
+//        model.addAttribute("treatments", doctorTreatments);
+//        model.addAttribute("activePage", "treatment");
+//        return "admin/view-doctor-treatment";
+//    }
 
 
     @GetMapping("/signup/{id}")

@@ -91,11 +91,10 @@
                             </td>   -->
                             <td th:text="${appointment.remark}"></td>
                             <td class="text-nowrap center-align">
-                                <a th:href="@{/appointment/view/{id}(id=${appointment.id})}" class="text-black" title="View details">
+                                <a th:href="@{/appointment/view/{id}(id=${appointment.id})}"
+                                   class="text-black"
+                                   title="View details">
                                     <i class="fas fa-eye fa-sm"></i>
-                                </a>
-                                <a th:href="@{/appointment/update/{id}(id=${appointment.id})}" class="text-black" title="Edit appointment">
-                                    <i class="fas fa-pencil fa-sm"></i>
                                 </a>
                             </td>
                         </tr>

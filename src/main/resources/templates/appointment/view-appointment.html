@@ -3,56 +3,116 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>View Appointment</title>
+    <title>Update Patient</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="container py-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light font-weight-bold">
-                <i class="fas fa-calendar-alt"></i> Appointment Details
+    <div class="container py-0">
+    <!-- Patient Information Card -->
+    <div class="card shadow-sm border-0 mb-4" >
+        <div class="card-header bg-light font-weight-bold d-flex">
+            <span><i class="fas fa-user"></i> Patient Information</span>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Full Name:</div>
+                <div class="col-sm-8" th:text="${appointment.patient.name}">John Doe</div>
             </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <h5>Patient Information</h5>
-                        <p><strong>Name:</strong> <span th:text="${appointment.patient.name}"></span></p>
-                        <p><strong>ID:</strong> <span th:text="${appointment.patient.patientId}"></span></p>
-                        <p><strong>Phone:</strong> <span th:text="${appointment.patient.phone}"></span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Doctor Information</h5>
-                        <p><strong>Name:</strong> <span th:text="${appointment.doctor.name}"></span></p>
-                        <p><strong>Room:</strong> <span th:text="${appointment.doctor.room}"></span></p>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <h5>Appointment Details</h5>
-                        <p><strong>Date:</strong> <span th:text="${#temporals.format(appointment.date, 'dd-MM-yyyy')}"></span></p>
-                        <p><strong>Time:</strong> <span th:text="${appointment.time}"></span></p>
-                        <p><strong>Status:</strong> <span th:text="${appointment.status}"></span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Notes</h5>
-                        <p th:text="${appointment.remark ?: 'No remarks'}"></p>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-end">
-                    <a th:href="@{/appointment}" class="btn btn-primary">
-                        <i class="fas fa-arrow-left"></i> Back to List
-                    </a>
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Birth Date:</div>
+                <div class="col-sm-8" th:text="${#dates.format(appointment.patient.dob, 'dd/MM/yyyy')}">01/01/1990</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Gender:</div>
+                <div class="col-sm-8" th:text="${appointment.patient.gender}">Male</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Phone Number:</div>
+                <div class="col-sm-8" th:text="${appointment.patient.phone}">012-3456789</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Address:</div>
+                <div class="col-sm-8">
+                    <span th:text="${appointment.patient.street}">123 Main St</span>,
+                    <span th:text="${appointment.patient.postcode}">12345</span>,
+                    <span th:text="${appointment.patient.city}">Kuala Lumpur</span>,
+                    <span th:text="${appointment.patient.state}">Selangor</span>,
+                    <span th:text="${appointment.patient.country}">Malaysia</span>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light font-weight-bold d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-stethoscope"></i> Appointment Details</span>
+            <div class="d-flex gap-2">
+                <a th:href="@{/appointment/update/{id}(id=${appointment.id})}"
+                   class="text-black"
+                   title="Edit Treatment">
+                    <i class="fas fa-edit fa-lg"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <!-- Row: Treatment ID & Appointment ID -->
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Appointment ID:</div>
+                <div class="col-sm-4" th:text="${appointment.id}">APT001</div>
+            </div>
+
+            <!-- Row: Doctor Name & Room -->
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Doctor:</div>
+                <div class="col-sm-4" th:text="${appointment.doctor.name}">Dr. Ali</div>
+                <div class="col-sm-2 text-muted">Room:</div>
+                <div class="col-sm-4" th:text="${appointment.doctor.room}">Room 5</div>
+            </div>
+
+            <!-- Row: Date, Time & Status -->
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Date & Time:</div>
+                <div class="col-sm-4" th:text="${#dates.format(appointment.date, 'dd/MM/yyyy') + ' ' + appointment.time}">
+                    17/06/2025 09:00 AM
+                </div>
+
+                <div class="col-sm-2 text-muted">Status:</div>
+                <div class="col-sm-4">
+
+                    <div th:switch="${appointment.status.name()}">
+                        <span th:case="'Scheduled'" class="badge bg-warning text-dark" th:text="${appointment.status.name()}">Scheduled</span>
+                        <span th:case="'Comfirmed'" class="badge bg-primary" th:text="${appointment.status.name()}">Comfirmed</span>
+                        <span th:case="'Completed'" class="badge bg-success" th:text="${appointment.status.name()}">Completed</span>
+                        <span th:case="'Canceled'" class="badge bg-danger" th:text="${appointment.status.name()}">Canceled</span>
+                        <span th:case="*" class="badge bg-secondary" th:text="${appointment.status.name()}">UNKNOWN</span>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- Remark -->
+            <div class="row mb-2">
+                <div class="col-sm-2 text-muted">Remark:</div>
+                <div class="col-sm-10" th:text="${appointment.remark}">Patient needs rest</div>
+            </div>
+
+        </div>
+
+    </div>
+    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

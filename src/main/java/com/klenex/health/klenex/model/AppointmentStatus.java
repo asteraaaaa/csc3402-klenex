@@ -1,9 +1,9 @@
 package com.klenex.health.klenex.model;
 
 public enum AppointmentStatus {
-    Pending,
+    Scheduled,
     Comfirmed,
     Completed,
     Canceled,
-    Scheduled
+
 }
