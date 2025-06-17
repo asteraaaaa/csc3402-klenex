@@ -32,7 +32,7 @@ public class Appointment {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private AppointmentStatus status;
+    private AppointmentStatus status = AppointmentStatus.Scheduled;
 
     @Column(name = "remark")
     private String remark;

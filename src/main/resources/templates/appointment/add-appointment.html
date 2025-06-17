@@ -3,191 +3,223 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>Add Appointment</title>
+    <title>Update Patient</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        /* Match Bootstrap 4 form-control height and style */
+        .select2-container--default .select2-selection--single {
+            height: calc(2.25rem + 2px); /* matches .form-control */
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 1.5;
+            padding-left: 0;
+            color: #495057;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+            right: 0.75rem;
+        }
+
+        /* Make sure the container expands like other form-controls */
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+
 </head>
 <body>
 <div layout:fragment="content">
     <div class="container py-0">
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-light font-weight-bold">
-                <i class="fas fa-user-plus"></i> Add New Appointment
+            <div class="card-header bg-light font-weight-bold d-flex ">
+                <span><i class="fas fa-users"></i> Choose Patient</span>
+            </div>
+
+            <div class="card-body">
+                <form class="d-flex align-items-end gap-2 flex-wrap flex-md-nowrap" method="get" th:action="@{/appointment/signup}" id="searchForm">
+                    <!-- Select existing/new -->
+                    <div class="form-group mb-0" style="min-width: 180px;">
+                        <select class="form-control" id="searchBy" onchange="handlePatientTypeChange()">
+                            <option value="existing">Existing Patient</option>
+                            <option value="new">New Patient</option>
+                        </select>
+                    </div>
+
+                    <!-- Select2 dropdown -->
+                    <div class="form-group mb-0 flex-grow-1" id="patientDropdownWrapper">
+                        <select name="patientId" th:field="*{patient.patientId}" class="form-control" id="patientSelect">
+                            <option value="">-- Select Patient --</option>
+                            <option th:each="patient : ${patients}"
+                                    th:value="${patient.patientId}"
+                                    th:text="${patient.name + ' (No Phone: ' + patient.phone + ')'}"
+                                    th:selected="${appointment.patient != null && appointment.patient.patientId == patient.patientId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="form-group mb-0">
+                        <!-- This anchor will be changed dynamically -->
+                        <a id="actionButton" class="btn btn-primary mt-2" onclick="submitFormOrRedirect(event)">
+                            <i class="fas fa-search"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <script>
+                $(document).ready(function () {
+                    $('#patientSelect').select2({
+                        placeholder: "Search patient",
+                        allowClear: true
+                    });
+
+                    handlePatientTypeChange(); // initialize
+                });
+
+                function handlePatientTypeChange() {
+                    const type = document.getElementById("searchBy").value;
+                    const actionButton = document.getElementById("actionButton");
+
+                    if (type === "new") {
+                        $('#patientSelect').val(null).trigger('change');
+                        $('#patientSelect').prop('disabled', true);
+                        actionButton.innerHTML = '<i class="fas fa-user-plus"></i>';
+                        actionButton.setAttribute("href", "/patient/signup");
+                    } else {
+                        $('#patientSelect').prop('disabled', false);
+                        actionButton.innerHTML = '<i class="fas fa-search"></i>';
+                        actionButton.setAttribute("href", "#");
+                    }
+                }
+
+                function submitFormOrRedirect(event) {
+                    const type = document.getElementById("searchBy").value;
+                    if (type === "existing") {
+                        document.getElementById("searchForm").submit();
+                    }
+                    // else, it’s a <a href="/patient/signup"> so let it redirect
+                }
+            </script>
+
+
+
+
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4" >
+
+            <div class="card-header bg-light font-weight-bold d-flex">
+                <span><i class="fas fa-users"></i> Patient Information</span>
+            </div>
+
+            <div class="card-body" >
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Full Name:</div>
+                    <div class="col-sm-8" th:text="${patient.name}">John Doe</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Birth Date:</div>
+                    <div class="col-sm-8" th:text="${#dates.format(patient.dob, 'dd/MM/yyyy')}">01/01/1990</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Gender:</div>
+                    <div class="col-sm-8" th:text="${patient.gender}">Male</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Phone Number:</div>
+                    <div class="col-sm-8" th:text="${patient.phone}">012-3456789</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Address:</div>
+                    <div class="col-sm-8">
+                        <span th:text="${patient.street}">123 Main St</span>,
+                        <span th:text="${patient.postcode}">12345</span>,
+                        <span th:text="${patient.city}">Kuala Lumpur</span>,
+                        <span th:text="${patient.state}">Selangor</span>,
+                        <span th:text="${patient.country}">Malaysia</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-light font-weight-bold d-flex ">
+                <span><i class="fas fa-users"></i> Add New Appointment</span>
             </div>
 
             <div class="card-body">
                 <!-- Form Starts -->
                 <form th:action="@{/appointment/add}" th:object="${appointment}" method="post">
-
-                    <!-- Hidden field to track selected patient option -->
-                    <input type="hidden" id="patientOptionHidden" name="patientOption" value="existing">
-
-                    <!-- Toggle Patient Mode -->
-                    <div class="form-group">
-                        <label>
-                            <input type="radio" name="patientOptionRadio" value="existing" checked onchange="togglePatientMode(this.value)"> Existing Patient
-                        </label>
-                        <label class="ml-3">
-                            <input type="radio" name="patientOptionRadio" value="new" onchange="togglePatientMode(this.value)"> New Patient
-                        </label>
-                    </div>
-
-                    <!-- Existing Patient Dropdown -->
-                    <div id="patientDropdownContainer" class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="patient">Existing Patient</label>
-                            <select th:field="*{patient.patientId}" class="form-control" id="patient">
-                                <option value="">-- Select Patient --</option>
-                                <option th:each="patient : ${patients}"
-                                        th:value="${patient.patientId}"
-                                        th:text="${patient.name + ' (ID: ' + patient.patientId + ')'}"
-                                        th:selected="${appointment.patient != null && appointment.patient.patientId == patient.patientId}">
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- New Patient Fields -->
-                    <div id="newPatientFields">
-                        <div class="form-row">
-                            <div class="form-group col-md-12">
-                                <label for="name">Full Name</label>
-                                <input type="text" th:field="*{patient.name}" class="form-control" id="name" placeholder="Patient Full Name">
-                                <span th:if="${#fields.hasErrors('patient.name')}" th:errors="*{patient.name}" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="gender">Gender</label>
-                                <input type="text" th:field="*{patient.gender}" class="form-control" id="gender" placeholder="Gender">
-                                <span th:if="${#fields.hasErrors('patient.gender')}" th:errors="*{patient.gender}" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="phone">Phone Number</label>
-                                <input type="text" th:field="*{patient.phone}" class="form-control" id="phone" placeholder="Phone Number">
-                                <span th:if="${#fields.hasErrors('patient.phone')}" th:errors="*{patient.phone}" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="dob">Date of Birth</label>
-                                <input type="date" th:field="*{patient.dob}" class="form-control" id="dob">
-                                <span th:if="${#fields.hasErrors('patient.dob')}" th:errors="*{patient.dob}" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-12">
-                                <label for="street">Street</label>
-                                <input type="text" th:field="*{patient.street}" class="form-control" id="street" placeholder="Street">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="city">City</label>
-                                <input type="text" th:field="*{patient.city}" class="form-control" id="city" placeholder="City">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="postcode">Postcode</label>
-                                <input type="text" th:field="*{patient.postcode}" class="form-control" id="postcode" placeholder="Postcode">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="state">State</label>
-                                <input type="text" th:field="*{patient.state}" class="form-control" id="state" placeholder="State">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="country">Country</label>
-                                <input type="text" th:field="*{patient.country}" class="form-control" id="country" placeholder="Country">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Appointment Details -->
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="doctor">Doctor</label>
-                            <select th:field="*{doctor.doctorId}" class="form-control" id="doctor" required>
-                                <option value="">-- Select Doctor --</option>
-                                <option th:each="doctor : ${doctors}"
-                                        th:value="${doctor.doctorId}"
-                                        th:text="${doctor.name + ' (Room: ' + doctor.room + ')'}">
-                                </option>
-                            </select>
-                        </div>
-                    </div>
+                    <input type="hidden" name="patientOption" id="patientOptionInput">
 
                     <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="date">Date</label>
-                            <input type="date" th:field="*{date}" class="form-control" id="date">
-                            <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="time">Time</label>
-                            <input type="time" th:field="*{time}" class="form-control" id="time">
-                            <span th:if="${#fields.hasErrors('time')}" th:errors="*{time}" class="text-danger"></span>
-                        </div>
+                    <div class="form-group col-md-6">
+                        <label for="doctor">Doctor</label>
+                        <select th:field="*{doctor.doctorId}" class="form-control" id="doctor" required>
+                            <option value="">-- Select Doctor --</option>
+                            <option th:each="doctor : ${doctors}"
+                                    th:value="${doctor.doctorId}"
+                                    th:text="${doctor.name + ' (Room: ' + doctor.room + ')'}">
+                            </option>
+                        </select>
                     </div>
+                    <div class="form-group col-md-3">
+                        <label for="date">Date</label>
+                        <input type="date" th:field="*{date}" class="form-control" id="date">
+                        <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="time">Time</label>
+                        <input type="time" th:field="*{time}" class="form-control" id="time">
+                        <span th:if="${#fields.hasErrors('time')}" th:errors="*{time}" class="text-danger"></span>
+                    </div>
+                </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="status">Status</label>
-                            <select th:field="*{status}" class="form-control" id="status">
-                                <option value="">-- Select Status --</option>
-                                <option value="Scheduled">Scheduled</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Cancelled">Cancelled</option>
-                            </select>
-                            <span th:if="${#fields.hasErrors('status')}" th:errors="*{status}" class="text-danger"></span>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="remark">Remark</label>
+                        <textarea th:field="*{remark}" class="form-control" id="remark" placeholder="Any notes or remarks"></textarea>
                     </div>
+                </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="remark">Remark</label>
-                            <textarea th:field="*{remark}" class="form-control" id="remark" placeholder="Any notes or remarks"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-group d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-success">Save</button>
-                        <button type="reset" class="btn btn-secondary">Reset</button>
-                        <a class="btn btn-danger" th:href="@{/appointment}">Cancel</a>
-                    </div>
+                <div class="form-group d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                    <a class="btn btn-danger" th:href="@{/appointment}">Cancel</a>
+                </div>
 
                 </form>
                 <!-- Form Ends -->
+
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Bootstrap JS + Custom Toggle Script -->
-<script>
-    function togglePatientMode(value) {
-        document.getElementById('patientOptionHidden').value = value;
-
-        const dropdown = document.getElementById('patientDropdownContainer');
-        const newFields = document.getElementById('newPatientFields');
-
-        if (value === 'existing') {
-            dropdown.style.display = 'flex';
-            newFields.style.display = 'none';
-        } else {
-            dropdown.style.display = 'none';
-            newFields.style.display = 'block';
-        }
-    }
-
-    // Set default on load
-    window.onload = function () {
-        togglePatientMode('existing');
-    };
-</script>
-
+<!-- Font Awesome & Bootstrap JS -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

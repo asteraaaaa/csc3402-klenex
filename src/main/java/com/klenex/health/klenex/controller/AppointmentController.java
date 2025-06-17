@@ -42,39 +42,51 @@ public class AppointmentController {
     }
 
     @GetMapping("/signup")
-    public String showAddForm(Model model) {
+    public String showAddForm(@RequestParam(value = "patientId", required = false) Integer patientId, Model model) {
         model.addAttribute("appointment", new Appointment());
-        model.addAttribute("patient", new Patient());
+
+        if (patientId != null) {
+            Optional<Patient> selectedPatient = patientService.findPatientById(patientId);
+            if (selectedPatient.isPresent()) {
+                model.addAttribute("patient", selectedPatient.get());
+            } else {
+                model.addAttribute("patient", new Patient());
+                model.addAttribute("error", "Patient not found.");
+            }
+        } else {
+            model.addAttribute("patient", new Patient());
+        }
+
         model.addAttribute("patients", patientService.listAllPatients());
         model.addAttribute("doctors", doctorService.listAllDoctors());
         model.addAttribute("activePage", "appointment");
         return "appointment/add-appointment";
     }
 
+
     @PostMapping("/add")
     public String addAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                 @ModelAttribute("patient") Patient patient,
+                                 @RequestParam(required = false) Integer patientId,
                                  @RequestParam(required = false) String patientOption,
+                                 @ModelAttribute Patient patient,
                                  BindingResult result,
                                  Model model) {
-
         if (result.hasErrors()) {
             model.addAttribute("patients", patientService.listAllPatients());
             model.addAttribute("doctors", doctorService.listAllDoctors());
             return "appointment/add-appointment";
         }
 
-        if ("existing".equals(patientOption) && patient.getPatientId() != null) {
-            Optional<Patient> existing = patientService.findPatientById(patient.getPatientId());
+        if ("existing".equals(patientOption) && patientId != null) {
+            Optional<Patient> existing = patientService.findPatientById(patientId);
             if (existing.isPresent()) {
                 appointment.setPatient(existing.get());
             } else {
-                // fallback if ID invalid
                 model.addAttribute("error", "Selected patient does not exist.");
                 return "appointment/add-appointment";
             }
         } else {
-            // New patient path
+            // Save new patient
             Patient savedPatient = patientService.addNewPatient(patient);
             appointment.setPatient(savedPatient);
         }
