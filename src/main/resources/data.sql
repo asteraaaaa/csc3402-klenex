@@ -16,19 +16,19 @@ VALUES
 
 INSERT INTO medication (name, medication_group, strength, dosage_form, quantity)
 VALUES
-    ('Paracetamol', 'ANALGESICS', '500mg', 'TABLET', 100),
-    ('Amoxicillin', 'ANTIBIOTICS', '250mg', 'CAPSULE', 50),
-    ('Lisinopril', 'ANTIHYPERTENSIVES', '10mg', 'TABLET', 80),
-    ('Simvastatin', 'OTHERS', '20mg', 'TABLET', 60),
-    ('Ventolin', 'BRONCHODILATORS', '100mcg', 'INHALER', 30);
+    ('Paracetamol', 'Analgesics', '500mg', 'Tablet', 100),
+    ('Amoxicillin', 'Antibiotics', '250mg', 'Capsule', 50),
+    ('Lisinopril', 'Antihypertensives', '10mg', 'Tablet', 80),
+    ('Simvastatin', 'Others', '20mg', 'Tablet', 60),
+    ('Ventolin', 'Bronchodilators', '100mcg', 'Inhaler', 30);
 
 INSERT INTO appointments (doctor_id, patient_id, date, time, status, remark)
 VALUES
-    (2, 1, '2023-10-15', '09:30:00', 'COMPLETED', 'Sore throat and mild fever'),
-    (1, 3, '2023-10-16', '14:15:00', 'COMPLETED', 'High blood pressure check-up'),
-    (4, 2, '2023-10-17', '11:00:00', 'COMPLETED', 'Rash and itching'),
-    (3, 5, '2023-10-18', '10:30:00', 'COMPLETED', 'Neck pain assessment'),
-    (5, 4, '2023-10-19', '16:45:00', 'COMPLETED', 'Persistent cough and chest pain');
+    (2, 1, '2023-10-15', '09:30:00', 'Completed', 'Sore throat and mild fever'),
+    (1, 3, '2023-10-16', '14:15:00', 'Completed', 'High blood pressure check-up'),
+    (4, 2, '2023-10-17', '11:00:00', 'Completed', 'Rash and itching'),
+    (3, 5, '2023-10-18', '10:30:00', 'Completed', 'Neck pain assessment'),
+    (5, 4, '2023-10-19', '16:45:00', 'Completed', 'Persistent cough and chest pain');
 
 INSERT INTO treatment (appointment_id, prescription, diagnosis)
 VALUES

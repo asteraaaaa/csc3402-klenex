@@ -70,9 +70,17 @@
                         <tr th:each="medication : ${medications}">
                             <td class="center-align" th:text="${medication.drugId}"></td>
                             <td th:text="${medication.name}"></td>
-                            <td th:text="${medication.medicationGroup}"></td>
+
+                            <td th:text="${medication.medicationGroup}" ></td>
+
                             <td th:text="${medication.strength}"></td>
-                            <td th:text="${medication.dosageForm}"></td>
+
+                            <td>
+                                <span
+                                        th:text="${medication.dosageForm}"
+                                        class="badge badge-info mr-1">Panadol
+                                </span>
+                            </td>
                             <td class="center-align" th:text="${medication.quantity}"></td>
                             <td class="text-nowrap center-align">
                                 <a th:href="@{/medication/update/{id}(id=${medication.drugId})}"
