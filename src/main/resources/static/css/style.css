@@ -10,6 +10,19 @@ body {
     flex-grow: 1;
 }
 
+#sidebar {
+    width: 240px;
+    transition: width 0.3s ease;
+}
+
+#sidebar.collapsed {
+    width: 70px;
+}
+
+#sidebar.collapsed .nav-link-text {
+    display: none;
+}
+
 .sidebar {
     width: 250px;
     min-height: 100vh;

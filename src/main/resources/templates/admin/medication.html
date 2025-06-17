@@ -76,17 +76,18 @@
                             <td class="center-align" th:text="${medication.quantity}"></td>
                             <td class="text-nowrap center-align">
                                 <a th:href="@{/medication/update/{id}(id=${medication.drugId})}"
-                                   class="btn btn-sm btn-light"
+                                   class="text-black"
                                    title="Edit medication">
                                     <i class="fas fa-pencil fa-sm"></i>
                                 </a>
                                 <a th:href="@{/medication/delete/{id}(id=${medication.drugId})}"
-                                   class="btn btn-sm btn-light"
+                                   class="text-black ms-2"
                                    title="Delete medication"
                                    onclick="return confirm('Are you sure you want to delete this medication?');">
                                     <i class="fas fa-trash fa-sm"></i>
                                 </a>
                             </td>
+
                         </tr>
                         </tbody>
                     </table>
