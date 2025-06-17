@@ -44,3 +44,4 @@ INSERT INTO prescribe (treatment_id, drug_id) VALUES
     (2, 3), -- Lisinopril
     (3, 5), -- Ventolin
     (4, 4); -- Simvastatin
+

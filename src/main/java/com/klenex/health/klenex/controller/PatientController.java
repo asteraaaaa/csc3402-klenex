@@ -1,7 +1,9 @@
 package com.klenex.health.klenex.controller;
 
 import com.klenex.health.klenex.model.Patient;
+import com.klenex.health.klenex.model.Treatment;
 import com.klenex.health.klenex.service.PatientService;
+import com.klenex.health.klenex.service.TreatmentService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,13 +13,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/patient")
 public class PatientController {
 
     private final PatientService patientService;
+    private final TreatmentService treatmentService;
 
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService, TreatmentService treatmentService) {
+        this.treatmentService = treatmentService;
         this.patientService = patientService;
     }
 
@@ -82,6 +88,8 @@ public class PatientController {
         Patient patient = patientService.findPatientById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + (int) id));
 
+        List<Treatment> treatments = treatmentService.findTreatmentsByPatientId((int) id);
+        model.addAttribute("treatments", treatments);
         model.addAttribute("patient", patient);
         return "patient/view-patient";
     }
