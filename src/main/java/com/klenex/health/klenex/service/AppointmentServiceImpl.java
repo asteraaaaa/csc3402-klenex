@@ -32,8 +32,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void deleteAppointmentById(Long id){
-        appointmentRepository.deleteById(id);
+    public void deleteAppointmentById(Long id) {
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        if (appointment != null) {
+            appointmentRepository.delete(appointment);  // Triggers cascade
+        }
     }
 
     @Override

@@ -11,7 +11,7 @@ public class Treatment {
     private int treatmentId;
 
     @OneToOne
-    @JoinColumn(name = "appointment_id", nullable = false)
+    @JoinColumn(name = "appointment_id", referencedColumnName = "appointment_id")
     private Appointment appointment;
 
     @Column(name = "prescription")

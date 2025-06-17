@@ -134,7 +134,7 @@ public class AppointmentController {
         return "redirect:/appointment/view/{id}";
     }
 
-    @PostMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteAppointment(@PathVariable("id") Long id) {
         appointmentService.deleteAppointmentById(id);
         return "redirect:/appointment";
