@@ -139,7 +139,7 @@
                 <!-- Row: Date, Time & Status -->
                 <div class="row mb-2">
                     <div class="col-sm-2 text-muted">Date & Time:</div>
-                    <div class="col-sm-4" th:text="${#dates.format(treatment.appointment.date, 'dd/MM/yyyy') + ' ' + #dates.format(treatment.appointment.time, 'hh:mm a')}">
+                    <div class="col-sm-4" th:text="${#dates.format(treatment.appointment.date, 'dd/MM/yyyy') + ' ' + treatment.appointment.time}">
                         17/06/2025 09:00 AM
                     </div>
 
