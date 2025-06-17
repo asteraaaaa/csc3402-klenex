@@ -171,6 +171,7 @@
             <div class="card-body">
                 <!-- Form Starts -->
                 <form th:action="@{/appointment/add}" th:object="${appointment}" method="post">
+                    <input type="hidden" th:field="*{patient.patientId}" th:value="${patient.patientId}" />
                     <input type="hidden" name="patientOption" id="patientOptionInput">
 
                     <div class="form-row">
