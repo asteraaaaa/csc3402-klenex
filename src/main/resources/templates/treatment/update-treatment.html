@@ -3,36 +3,105 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>Update Treatment</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Update Patient</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="container py-3">
+    <div class="container py-0">
+
+        <div class="card shadow-sm border-0 mb-4" >
+            <div class="card-header bg-light font-weight-bold d-flex">
+                <span><i class="fas fa-user"></i> Patient Information</span>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Full Name:</div>
+                    <div class="col-sm-8" th:text="${treatment.appointment.patient.name}">John Doe</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Birth Date:</div>
+                    <div class="col-sm-8" th:text="${#dates.format(treatment.appointment.patient.dob, 'dd/MM/yyyy')}">01/01/1990</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Gender:</div>
+                    <div class="col-sm-8" th:text="${treatment.appointment.patient.gender}">Male</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Phone Number:</div>
+                    <div class="col-sm-8" th:text="${treatment.appointment.patient.phone}">012-3456789</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Address:</div>
+                    <div class="col-sm-8">
+                        <span th:text="${treatment.appointment.patient.street}">123 Main St</span>,
+                        <span th:text="${treatment.appointment.patient.postcode}">12345</span>,
+                        <span th:text="${treatment.appointment.patient.city}">Kuala Lumpur</span>,
+                        <span th:text="${treatment.appointment.patient.state}">Selangor</span>,
+                        <span th:text="${treatment.appointment.patient.country}">Malaysia</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4" >
+            <div class="card-header bg-light font-weight-bold d-flex">
+                <span><i class="fas fa-stethoscope"></i> Appointment Information</span>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Appointment ID:</div>
+                    <div class="col-sm-4" th:text="${treatment.appointment.id}">APT001</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Doctor:</div>
+                    <div class="col-sm-4" th:text="${treatment.appointment.doctor.name}">Dr. Ali</div>
+                    <div class="col-sm-2 text-muted">Room:</div>
+                    <div class="col-sm-4" th:text="${treatment.appointment.doctor.room}">Room 5</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Date & Time:</div>
+                    <div class="col-sm-4" th:text="${#dates.format(treatment.appointment.date, 'dd/MM/yyyy') + ' ' + treatment.appointment.time}">
+                        17/06/2025 09:00 AM
+                    </div>
+                    <div class="col-sm-2 text-muted">Status:</div>
+                    <div class="col-sm-4">
+                        <div th:switch="${treatment.appointment.status.name()}">
+                            <span th:case="'Scheduled'" class="badge bg-warning text-dark" th:text="${treatment.appointment.status.name()}">Scheduled</span>
+                            <span th:case="'Comfirmed'" class="badge bg-primary" th:text="${treatment.appointment.status.name()}">Confirmed</span>
+                            <span th:case="'Completed'" class="badge bg-success" th:text="${treatment.appointment.status.name()}">Completed</span>
+                            <span th:case="'Canceled'" class="badge bg-danger" th:text="${treatment.appointment.status.name()}">Canceled</span>
+                            <span th:case="*" class="badge bg-secondary" th:text="${treatment.appointment.status.name()}">UNKNOWN</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 text-muted">Remark:</div>
+                    <div class="col-sm-10" th:text="${treatment.appointment.remark}">Patient needs rest</div>
+                </div>
+            </div>
+        </div>
+
         <div class="card shadow-sm">
-            <div class="card-header bg-light fw-bold">
+            <div class="card-header bg-light font-weight-bold d-flex">
                 <i class="fas fa-notes-medical me-2"></i>Update Treatment
             </div>
             <div class="card-body">
-                <form th:action="@{/treatment/update/{id}(id=${treatment.treatmentId})}"
-                      th:object="${treatment}" method="post">
-                    <input type="hidden" th:field="*{treatmentId}">
+                <form th:action="@{/treatment/update/{id}(id=${treatment.treatmentId})}" th:object="${treatment}" method="post">
+                    <input type="hidden" th:field="*{appointment.id}">
+
 
                     <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Appointment</label>
-                            <input type="text" class="form-control"
-                                   th:value="'Appt #' + ${treatment.appointment.appointmentId} + ' - ' + ${treatment.appointment.patient.name}"
-                                   readonly>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-12">
+                        <div class="form-group col-12">
                             <label for="diagnosis" class="form-label">Diagnosis</label>
-                            <textarea th:field="*{diagnosis}" class="form-control" id="diagnosis"
-                                      rows="3" required></textarea>
+                            <textarea th:field="*{diagnosis}" class="form-control" id="diagnosis" rows="3" required></textarea>
                             <div th:if="${#fields.hasErrors('diagnosis')}" class="invalid-feedback d-block">
                                 <span th:errors="*{diagnosis}"></span>
                             </div>
@@ -42,8 +111,7 @@
                     <div class="row mb-3">
                         <div class="col-12">
                             <label for="prescription" class="form-label">Prescription</label>
-                            <textarea th:field="*{prescription}" class="form-control" id="prescription"
-                                      rows="5" required></textarea>
+                            <textarea th:field="*{prescription}" class="form-control" id="prescription" rows="5" required></textarea>
                             <div th:if="${#fields.hasErrors('prescription')}" class="invalid-feedback d-block">
                                 <span th:errors="*{prescription}"></span>
                             </div>
@@ -71,20 +139,16 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-success px-4">
-                            <i class="fas fa-save me-2"></i>Update
-                        </button>
-                        <a th:href="@{/treatment}" class="btn btn-secondary px-4">
-                            <i class="fas fa-times me-2"></i>Cancel
-                        </a>
+                    <div class="form-group d-flex justify-content-end gap-2">
+                        <a class="btn btn-danger" th:href="@{/treatment/delete/{id}(id=${treatment.treatmentId})}" onclick="return confirm('Are you sure you want to delete this?')">Delete</a>
+                        <button type="submit" class="btn btn-success">Update</button>
+                        <a class="btn btn-dark" th:href="@{/treatment/view/{id}(id=${treatment.treatmentId})}">Cancel</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -104,33 +104,55 @@ public class TreatmentController {
         Treatment treatment = treatmentService.findTreatmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
 
+        List<Medication> medications = medicationService.listAllMedications();
+
         model.addAttribute("treatment", treatment);
+        model.addAttribute("medications", medications);
         model.addAttribute("activePage", "treatment");
         return "treatment/update-treatment";
     }
 
     @PostMapping("/update/{id}")
     public String updateTreatment(@PathVariable("id") int id,
-                                  @Valid @ModelAttribute Treatment treatment,
+                                  @Valid @ModelAttribute("treatment") Treatment treatment,
                                   BindingResult result,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
+            List<Medication> medications = medicationService.listAllMedications();
+            model.addAttribute("medications", medications);
             model.addAttribute("activePage", "treatment");
             return "treatment/update-treatment";
         }
 
         treatment.setTreatmentId(id);
+        Appointment appointment = appointmentService.findAppointmentById(
+                        treatment.getAppointment().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+        treatment.setAppointment(appointment);
+
         treatmentService.updateTreatment(treatment);
         redirectAttributes.addFlashAttribute("successMessage", "Treatment updated successfully!");
-        return "redirect:/treatment";
+        return "redirect:/patient/view/" + appointment.getPatient().getPatientId();
     }
 
-    @PostMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteTreatment(@PathVariable("id") int id,
                                   RedirectAttributes redirectAttributes) {
         treatmentService.deleteTreatmentById(id);
         redirectAttributes.addFlashAttribute("successMessage", "Treatment deleted successfully!");
         return "redirect:/treatment";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewTreatment(@PathVariable("id") int id, Model model) {
+        Treatment treatment = treatmentService.findTreatmentById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
+
+        model.addAttribute("treatment", treatment);
+        model.addAttribute("activePage", "treatment");
+        int patientId = treatment.getAppointment().getPatient().getPatientId();
+        return "redirect:/patient/view/" + patientId;
+    }
+
 }
