@@ -3,11 +3,10 @@ package com.klenex.health.klenex.controller;
 import com.klenex.health.klenex.model.Appointment;
 import com.klenex.health.klenex.model.Doctor;
 import com.klenex.health.klenex.model.Patient;
-import com.klenex.health.klenex.model.Treatment;
 import com.klenex.health.klenex.service.AppointmentService;
 import com.klenex.health.klenex.service.DoctorService;
 import com.klenex.health.klenex.service.PatientService;
-//import com.klenex.health.klenex.service.TreatmentService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,17 +24,14 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final PatientService patientService;
     private final DoctorService doctorService;
-    //private final TreatmentService treatmentService;
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService,
                                  PatientService patientService,
-                                 DoctorService doctorService/*,
-                                 TreatmentService treatmentService*/) {
+                                 DoctorService doctorService) {
         this.appointmentService = appointmentService;
         this.patientService = patientService;
         this.doctorService = doctorService;
-        //this.treatmentService = treatmentService;
     }
 
     @GetMapping("")
@@ -45,51 +41,66 @@ public class AppointmentController {
         return "admin/appointment";
     }
 
-    @GetMapping("signup")
+    @GetMapping("/signup")
     public String showAddForm(Model model) {
         model.addAttribute("appointment", new Appointment());
+        model.addAttribute("patient", new Patient());
         model.addAttribute("patients", patientService.listAllPatients());
         model.addAttribute("doctors", doctorService.listAllDoctors());
-        //model.addAttribute("treatments", treatmentService.findAllTreatments());
         model.addAttribute("activePage", "appointment");
         return "appointment/add-appointment";
     }
 
-    @PostMapping("add")
-    public String addAppointment(@Valid @ModelAttribute Appointment appointment,
+    @PostMapping("/add")
+    public String addAppointment(@ModelAttribute("appointment") Appointment appointment,
+                                 @ModelAttribute("patient") Patient patient,
+                                 @RequestParam(required = false) String patientOption,
                                  BindingResult result,
                                  Model model) {
+
         if (result.hasErrors()) {
             model.addAttribute("patients", patientService.listAllPatients());
             model.addAttribute("doctors", doctorService.listAllDoctors());
-            //model.addAttribute("treatments", treatmentService.findAllTreatments());
             return "appointment/add-appointment";
+        }
+
+        if ("existing".equals(patientOption) && patient.getPatientId() != null) {
+            Optional<Patient> existing = patientService.findPatientById(patient.getPatientId());
+            if (existing.isPresent()) {
+                appointment.setPatient(existing.get());
+            } else {
+                // fallback if ID invalid
+                model.addAttribute("error", "Selected patient does not exist.");
+                return "appointment/add-appointment";
+            }
+        } else {
+            // New patient path
+            Patient savedPatient = patientService.addNewPatient(patient);
+            appointment.setPatient(savedPatient);
         }
 
         appointmentService.addNewAppointment(appointment);
         return "redirect:/appointment";
     }
 
-    @GetMapping("update")
+    @GetMapping("/update")
     public String showUpdateMainForm(Model model) {
         model.addAttribute("appointments", appointmentService.listAllAppointments());
         model.addAttribute("activePage", "appointment");
         return "choose-appointment-to-update";
     }
 
-    @GetMapping("update/{id}")
+    @GetMapping("/update/{id}")
     public String showUpdateForm(@PathVariable("id") Long id, Model model) {
         Appointment appointment = appointmentService.findAppointmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid appointment ID: " + id));
-
         model.addAttribute("appointment", appointment);
         model.addAttribute("patients", patientService.listAllPatients());
         model.addAttribute("doctors", doctorService.listAllDoctors());
-        //model.addAttribute("treatments", treatmentService.findAllTreatments());
         return "appointment/update-appointment";
     }
 
-    @PostMapping("update/{id}")
+    @PostMapping("/update/{id}")
     public String updateAppointment(@PathVariable("id") Long id,
                                     @Valid Appointment appointment,
                                     BindingResult result,
@@ -98,7 +109,6 @@ public class AppointmentController {
             appointment.setId(id);
             model.addAttribute("patients", patientService.listAllPatients());
             model.addAttribute("doctors", doctorService.listAllDoctors());
-            //model.addAttribute("treatments", treatmentService.findAllTreatments());
             return "appointment/update-appointment";
         }
 
@@ -107,21 +117,18 @@ public class AppointmentController {
         return "redirect:/appointment";
     }
 
-    @PostMapping("delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteAppointment(@PathVariable("id") Long id) {
-        System.out.println("Delete request received for ID: " + id);
         appointmentService.deleteAppointmentById(id);
-        System.out.println("Delete operation completed for ID: " + id);
         return "redirect:/appointment";
     }
 
-    @GetMapping("view/{id}")
+    @GetMapping("/view/{id}")
     public String viewAppointment(@PathVariable("id") Long id, Model model) {
         Optional<Appointment> appointment = appointmentService.findAppointmentById(id);
         if (appointment.isEmpty()) {
             throw new IllegalArgumentException("Invalid appointment ID: " + id);
         }
-
         model.addAttribute("appointment", appointment.get());
         model.addAttribute("activePage", "appointment");
         return "appointment/view-appointment";
