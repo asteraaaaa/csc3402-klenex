@@ -1,6 +1,8 @@
 package com.klenex.health.klenex.model;
 
 import jakarta.persistence.*;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -20,13 +22,15 @@ public class Treatment {
     @Column(name = "diagnosis")
     private String diagnosis;
 
-    @ManyToMany
+    @ManyToMany (fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
         name = "PRESCRIBE",
         joinColumns = @JoinColumn(name = "treatment_id"),
         inverseJoinColumns = @JoinColumn(name = "drug_id")
     )
-    private Set<Medication> medications;
+    private Set<Medication> medications = new HashSet<>();
+
+    private String medication;
 
     public Treatment() {
     }
@@ -78,6 +82,10 @@ public class Treatment {
     public void setMedications(Set<Medication> medications) {
         this.medications = medications;
     }
+
+    public String getMedication() { return medication; }
+
+    public void setMedication(String medication) { this.medication = medication; }
 
     @Override
     public String toString() {

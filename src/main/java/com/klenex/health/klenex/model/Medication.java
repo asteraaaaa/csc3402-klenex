@@ -2,6 +2,7 @@ package com.klenex.health.klenex.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,7 +13,7 @@ public class Medication {
     private int drugId;
 
     @ManyToMany(mappedBy = "medications")
-    private Set<Treatment> treatments;
+    private Set<Treatment> treatments = new HashSet<>();
 
     @Column(name = "name")
     private String name;
