@@ -84,11 +84,13 @@
                             <td class="center-align">
                                 <span th:text="${appointment.time}"></span>
                             </td>
-                            <td class="center-align" th:text="${appointment.status}"></td>
-                        <!--    <td class="center-align">
-                                <span th:if="${appointment.treatment != null}" th:text="${appointment.treatment.name}">N/A</span>
-                                <span th:unless="${appointment.treatment != null}">No Treatment</span>
-                            </td>   -->
+                            <td class="center-align" th:switch="${appointment.status.name()}">
+                                <span th:case="'Scheduled'" class="badge bg-warning text-dark" th:text="${appointment.status.name()}">Scheduled</span>
+                                <span th:case="'Comfirmed'" class="badge bg-primary" th:text="${appointment.status.name()}">Comfirmed</span>
+                                <span th:case="'Completed'" class="badge bg-success" th:text="${appointment.status.name()}">Completed</span>
+                                <span th:case="'Canceled'" class="badge bg-danger" th:text="${appointment.status.name()}">Canceled</span>
+                                <span th:case="*" class="badge bg-secondary" th:text="${appointment.status.name()}">UNKNOWN</span>
+                            </td>
                             <td th:text="${appointment.remark}"></td>
                             <td class="text-nowrap center-align">
                                 <a th:href="@{/appointment/view/{id}(id=${appointment.id})}"

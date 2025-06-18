@@ -58,7 +58,7 @@
                             <th>Patient</th>
                             <th>Doctor</th>
                             <th>Diagnosis</th>
-
+                            <th>Status</th>
                             <th class="center-align">Actions</th>
                         </tr>
                         </thead>
@@ -70,16 +70,31 @@
                             <td class="center-align" th:text="${#dates.format(treatment.appointment.date, 'dd-MM-yyyy')}">01-01-2025</td>
                             <td th:text="${treatment.appointment.patient.name}">John Doe</td>
                             <td th:text="${treatment.appointment.doctor.name}">Dr. Smith</td>
+                                <td th:switch="${treatment.appointment.status.name()}">
+                                    <span th:case="'Scheduled'" class="badge bg-warning text-dark" th:text="${treatment.appointment.status.name()}">Scheduled</span>
+                                    <span th:case="'Comfirmed'" class="badge bg-primary" th:text="${treatment.appointment.status.name()}">Comfirmed</span>
+                                    <span th:case="'Completed'" class="badge bg-success" th:text="${treatment.appointment.status.name()}">Completed</span>
+                                    <span th:case="'Canceled'" class="badge bg-danger" th:text="${treatment.appointment.status.name()}">Canceled</span>
+                                    <span th:case="*" class="badge bg-secondary" th:text="${treatment.appointment.status.name()}">UNKNOWN</span>
+                                </td>
+
                             <td th:text="${treatment.diagnosis}">Flu</td>
 
 
                             <td class="text-nowrap center-align">
+                                <div class="gap-2">
+                                    <a th:href="@{/treatment/view/{id}(id=${treatment.treatmentId})}"
+                                       class="text-black"
+                                       title="View details">
+                                        <i class="fas fa-eye fa-sm"></i>
+                                    </a>
+                                    <a th:href="@{/treatment/update/{id}(id=${treatment.treatmentId})}"
+                                       class="text-black"
+                                       title="Edit Treatment">
+                                        <i class="fas fa-edit fa-sm"></i>
+                                    </a>
+                                </div>
 
-                                <a th:href="@{/treatment/view/{id}(id=${treatment.treatmentId})}"
-                                   class="text-black"
-                                   title="View details">
-                                    <i class="fas fa-eye fa-sm"></i>
-                                </a>
                             </td>
                         </tr>
                         </tbody>

@@ -2,10 +2,12 @@ package com.klenex.health.klenex.controller;
 
 import com.klenex.health.klenex.model.Appointment;
 import com.klenex.health.klenex.model.Patient;
+import com.klenex.health.klenex.model.Treatment;
 import com.klenex.health.klenex.service.AppointmentService;
 import com.klenex.health.klenex.service.DoctorService;
 import com.klenex.health.klenex.service.PatientService;
 
+import com.klenex.health.klenex.service.TreatmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,13 +26,19 @@ public class AppointmentController {
     private final DoctorService doctorService;
 
     @Autowired
+    private TreatmentService treatmentService;
+
+    @Autowired
     public AppointmentController(AppointmentService appointmentService,
                                  PatientService patientService,
-                                 DoctorService doctorService) {
+                                 DoctorService doctorService,
+                                 TreatmentService treatmentService) {
         this.appointmentService = appointmentService;
         this.patientService = patientService;
         this.doctorService = doctorService;
+        this.treatmentService = treatmentService;
     }
+
 
     @GetMapping("")
     public String listAppointments(Model model) {
@@ -90,6 +98,13 @@ public class AppointmentController {
             Patient savedPatient = patientService.addNewPatient(patient);
             appointment.setPatient(savedPatient);
         }
+
+        Appointment  savedAppointment = appointmentService.addNewAppointment(appointment);
+
+        // Auto-create a blank treatment linked to the appointment
+        Treatment blankTreatment = new Treatment();
+        blankTreatment.setAppointment(savedAppointment); // if you have this relationship
+        treatmentService.addNewTreatment(blankTreatment); // or whatever your method is
 
         appointmentService.addNewAppointment(appointment);
         return "redirect:/appointment";
