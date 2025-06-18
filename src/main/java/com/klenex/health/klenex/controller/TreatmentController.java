@@ -133,7 +133,7 @@ public class TreatmentController {
 
         treatmentService.updateTreatment(treatment);
         redirectAttributes.addFlashAttribute("successMessage", "Treatment updated successfully!");
-        return "redirect:/patient/view/" + appointment.getPatient().getPatientId();
+        return "redirect:/treatment/view/{id}";
     }
 
     @GetMapping("/delete/{id}")
@@ -144,6 +144,17 @@ public class TreatmentController {
         return "redirect:/treatment";
     }
 
+//    @GetMapping("/view/{id}")
+//    public String viewTreatment(@PathVariable("id") int id, Model model) {
+//        Treatment treatment = treatmentService.findTreatmentById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
+//
+//        model.addAttribute("treatment", treatment);
+//        model.addAttribute("activePage", "treatment");
+//        int patientId = treatment.getAppointment().getPatient().getPatientId();
+//        return "redirect:view-treatment" + patientId;
+//    }
+
     @GetMapping("/view/{id}")
     public String viewTreatment(@PathVariable("id") int id, Model model) {
         Treatment treatment = treatmentService.findTreatmentById(id)
@@ -152,7 +163,7 @@ public class TreatmentController {
         model.addAttribute("treatment", treatment);
         model.addAttribute("activePage", "treatment");
         int patientId = treatment.getAppointment().getPatient().getPatientId();
-        return "redirect:/patient/view/" + patientId;
+        return "treatment/view-treatment";
     }
 
 }
