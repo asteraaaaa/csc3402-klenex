@@ -159,12 +159,23 @@
 
 
                     <div class="form-row">
-                        <div class="form-group col-md-12">
+                        <div class="form-group col-md-10">
                             <label for="diagnosis">Diagnosis</label>
                             <textarea th:field="*{diagnosis}" class="form-control" id="diagnosis"
                                       placeholder="Enter patient diagnosis"></textarea>
                         </div>
+                        <div class="form-group col-md-2" id="statusDropDown">
+                            <label for="SelectStatus" class="required-field">Status</label>
+                            <select th:field="*{status}" class="form-control" id="SelectStatus" required>
+                                <option th:each="stat : ${T(com.klenex.health.klenex.model.AppointmentStatus).values()}"
+                                        th:value="${stat}"
+                                        th:text="${stat}">
+                                </option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('status')}" th:errors="*{status}" class="text-danger"></span>
+                        </div>
                     </div>
+
 
 
                     <div class="form-row">

@@ -126,15 +126,28 @@ public class TreatmentController {
         }
 
         treatment.setTreatmentId(id);
+
+        // Fetch latest appointment from DB
         Appointment appointment = appointmentService.findAppointmentById(
                         treatment.getAppointment().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+
+        // ⬇️ Apply the status from the form to the fetched appointment
+        if (treatment.getStatus() != null) {
+            appointment.setStatus(treatment.getStatus());
+        }
+
+        // Set the updated appointment back to treatment
         treatment.setAppointment(appointment);
 
+        // Save both
+        appointmentService.updateAppointment(appointment); // Optional if cascade works
         treatmentService.updateTreatment(treatment);
+
         redirectAttributes.addFlashAttribute("successMessage", "Treatment updated successfully!");
         return "redirect:/treatment/view/{id}";
     }
+
 
     @GetMapping("/delete/{id}")
     public String deleteTreatment(@PathVariable("id") int id,

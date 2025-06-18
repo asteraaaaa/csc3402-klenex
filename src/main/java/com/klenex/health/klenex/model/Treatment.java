@@ -32,6 +32,25 @@ public class Treatment {
 
     private String medication;
 
+    @Transient
+    private AppointmentStatus status;
+
+    public AppointmentStatus getStatus() {
+        // This ensures form displays current status
+        if (appointment != null && appointment.getStatus() != null) {
+            return appointment.getStatus();
+        }
+        return status;
+    }
+
+    public void setStatus(AppointmentStatus status) {
+        // Sync to nested model before saving
+        if (appointment != null) {
+            appointment.setStatus(status);
+        }
+        this.status = status;
+    }
+
     public Treatment() {
     }
 
