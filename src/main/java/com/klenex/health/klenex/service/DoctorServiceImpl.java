@@ -38,4 +38,9 @@ public class DoctorServiceImpl implements DoctorService {
     public void deleteDoctor(Doctor doctor) {
         doctorRepository.delete(doctor);
     }
+
+    @Override
+    public Optional<Doctor> findByUserEmail(String email) {
+        return Optional.empty();
+    }
 }
