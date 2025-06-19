@@ -1,15 +1,16 @@
 package com.klenex.health.klenex.controller;
 
 import com.klenex.health.klenex.model.Appointment;
-import com.klenex.health.klenex.service.AppointmentService;
-import com.klenex.health.klenex.service.DoctorService;
-import com.klenex.health.klenex.service.MedicationService;
-import com.klenex.health.klenex.service.PatientService;
+import com.klenex.health.klenex.model.AppointmentStatus;
+import com.klenex.health.klenex.model.Doctor;
+import com.klenex.health.klenex.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,16 +22,18 @@ public class DashboardController {
     private final PatientService patientService;
     private final AppointmentService appointmentService;
     private final MedicationService medicationService;
+    private final TreatmentService treatmentService;
 
     @Autowired
     public DashboardController(DoctorService doctorService,
                                PatientService patientService,
                                AppointmentService appointmentService,
-                               MedicationService medicationService) {
+                               MedicationService medicationService, TreatmentService treatmentService) {
         this.doctorService = doctorService;
         this.patientService = patientService;
         this.appointmentService = appointmentService;
         this.medicationService = medicationService;
+        this.treatmentService = treatmentService;
     }
 
     @GetMapping("/")
@@ -48,5 +51,66 @@ public class DashboardController {
         model.addAttribute("appointments", recentAppointments);
 
         return "admin/dashboard";
+    }
+
+    @GetMapping("/doctor/dashboard")
+    public String doctorDashboard(Principal principal, Model model) {
+        String email = principal.getName();
+        Doctor doctor = doctorService.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Doctor not found for " + email));
+
+        Integer docId = doctor.getDoctorId();
+        LocalDate today = LocalDate.now();
+
+        // 1) Today's appointments
+        List<Appointment> todays = appointmentService.listAllAppointments().stream()
+                .filter(a ->
+                        a.getDoctor().getDoctorId().equals(docId) &&
+                                a.getDate().toLocalDate().equals(today)
+                )
+                .collect(Collectors.toList());
+
+        // 2) Pending treatments - using appointment status since Treatment doesn't have status
+        long pendingTreatments = treatmentService.listAllTreatments().stream()
+                .filter(t -> t.getAppointment().getDoctor().getDoctorId().equals(docId))
+                .filter(t -> t.getAppointment().getStatus() == AppointmentStatus.Scheduled
+                        || t.getAppointment().getStatus() == AppointmentStatus.Comfirmed)
+                .count();
+
+        // 3) Pending medications total
+        long pendingMedications = treatmentService.listAllTreatments().stream()
+                .filter(t -> t.getAppointment().getDoctor().getDoctorId().equals(docId))
+                .filter(t -> t.getAppointment().getStatus() == AppointmentStatus.Scheduled
+                        || t.getAppointment().getStatus() == AppointmentStatus.Comfirmed)
+                .mapToLong(t -> t.getMedications() != null ? t.getMedications().size() : 0)
+                .sum();
+
+        // 4) Other stats
+        long totalAppointments = appointmentService.listAllAppointments().stream()
+                .filter(a -> a.getDoctor().getDoctorId().equals(docId))
+                .count();
+
+        long completedTreatments = treatmentService.listAllTreatments().stream()
+                .filter(t -> t.getAppointment().getDoctor().getDoctorId().equals(docId))
+                .filter(t -> t.getAppointment().getStatus() == AppointmentStatus.Completed)
+                .count();
+
+        long totalPatientsSeen = appointmentService.listAllAppointments().stream()
+                .filter(a -> a.getDoctor().getDoctorId().equals(docId))
+                .map(a -> a.getPatient().getPatientId())
+                .distinct()
+                .count();
+
+        // 5) Model attributes for Thymeleaf
+        model.addAttribute("doctorId", docId);
+        model.addAttribute("todayAppointments", todays.size());
+        model.addAttribute("appointments", todays);
+        model.addAttribute("pendingTreatments", pendingTreatments);
+        model.addAttribute("pendingMedications", pendingMedications);
+        model.addAttribute("totalAppointments", totalAppointments);
+        model.addAttribute("completedTreatments", completedTreatments);
+        model.addAttribute("totalPatientsSeen", totalPatientsSeen);
+
+        return "doctor/dashboard";
     }
 }
