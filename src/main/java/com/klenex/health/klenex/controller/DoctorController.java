@@ -63,7 +63,7 @@ public class DoctorController {
         return "redirect:/doctor";
     }
 
-    @GetMapping("delete/{id}")
+    @PostMapping("delete/{id}")
     public String deleteDoctor(@PathVariable("id") long id, Model model) {
         Doctor doctor = doctorRepository.findById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid doctor Id:" + id));
