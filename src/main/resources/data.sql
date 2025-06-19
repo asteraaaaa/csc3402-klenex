@@ -45,3 +45,20 @@ INSERT INTO prescribe (treatment_id, drug_id) VALUES
     (3, 5), -- Ventolin
     (4, 4); -- Simvastatin
 
+INSERT INTO roles (id, name) VALUES (3, 'ROLE_DOCTOR');
+
+INSERT INTO users (email, name, password)
+VALUES
+    ('ahmad.ismail@klenex.com', 'Dr. Ahmad bin Ismail', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    ('priya.rajan@klenex.com', 'Dr. Priya a/p Rajan', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    ('wong.limei@klenex.com', 'Dr. Wong Li Mei', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    ('siti.nurhaliza@klenex.com', 'Dr. Siti Nurhaliza binti Mohamad', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    ('kumar.maniam@klenex.com', 'Dr. Kumar a/l Maniam', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe');
+
+INSERT INTO users_roles (user_id, role_id)
+VALUES
+    (1, 3),
+    (2, 3),
+    (3, 3),
+    (4, 3),
+    (5, 3);

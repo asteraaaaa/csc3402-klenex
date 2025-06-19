@@ -47,10 +47,14 @@ public class Doctor {
     @Column(name = "image")
     private String image;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Doctor() {
     }
 
-    public Doctor(Integer doctorId, Set<Appointment> appointments, String name, String room, String phone, String email, String password, String street, String city, String state, String postcode, String country, String image) {
+    public Doctor(Integer doctorId, Set<Appointment> appointments, String name, String room, String phone, String email, String password, String street, String city, String state, String postcode, String country, String image, User user) {
         this.doctorId = doctorId;
         this.appointments = appointments;
         this.name = name;
@@ -64,6 +68,7 @@ public class Doctor {
         this.postcode = postcode;
         this.country = country;
         this.image = image;
+        this.user = new User();
     }
 
     public Integer getDoctorId() {
@@ -170,6 +175,14 @@ public class Doctor {
         this.image = image;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "Doctor{" +
@@ -186,6 +199,7 @@ public class Doctor {
                 ", postcode='" + postcode + '\'' +
                 ", country='" + country + '\'' +
                 ", image='" + image + '\'' +
+                ", user=" + user +
                 '}';
     }
 }
