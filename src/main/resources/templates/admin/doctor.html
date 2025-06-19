@@ -6,12 +6,66 @@
 <head>
     <title>Doctor</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .doctor-card {
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .doctor-card:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .card-body p {
+            font-size: 0.95rem;
+        }
+
+        .icon-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .icon-container a,
+        .icon-container button {
+            color: #6c757d;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            padding: 6px;
+            font-size: 16px;
+            text-align: center;
+            border: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            width: 36px;
+            height: 36px;
+        }
+
+        .icon-container a:hover,
+        .icon-container button:hover {
+            background-color: #f0f0f0;
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
 </head>
 
 <body>
 <div layout:fragment="content">
-    <div class="container py-0">
+    <div class="container py-4">
 
+        <!-- Search Form -->
         <div class="mb-4">
             <form action="/doctor/search" method="get" class="mb-4 d-flex">
                 <input type="text" name="keyword" class="form-control me-2" placeholder="Search doctors by name..." required>
@@ -19,13 +73,15 @@
             </form>
         </div>
 
-        <div class="card-footer d-flex justify-content-end bg-white mb-4">
+        <!-- Add Button -->
+        <div class="d-flex justify-content-end mb-4">
             <a href="/doctor/signup" class="btn btn-success">
                 <i class="fas fa-plus-circle"></i> Add New Doctor
             </a>
         </div>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${doctors != null}">
+        <!-- Doctor Cards -->
+        <div class="row row-cols-1 row-cols-md-2 gx-4 gy-4" th:if="${doctors != null}">
             <div th:if="${#lists.isEmpty(doctors)}" class="col">
                 <div class="alert alert-warning w-100 text-center">
                     No doctors found.
@@ -33,50 +89,66 @@
             </div>
 
             <div class="col" th:each="doctor : ${doctors}">
-                <div class="card h-100 doctor-card">
-                    <img th:src="@{/images/{img}(img=${doctor.image})}" class="card-img-top" alt="Doctor Image" style="object-fit: cover; height: 200px;">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${doctor.name}"></h5>
-                        <p class="card-text mb-1"><strong>ID:</strong> <span th:text="${doctor.doctorId}"></span></p>
-                        <p class="card-text mb-1"><strong>Room:</strong> <span th:text="${doctor.room}"></span></p>
-                        <p class="card-text mb-1"><strong>Phone:</strong> <span th:text="${doctor.phone}"></span></p>
-                        <p class="card-text mb-1"><strong>Email:</strong> <span th:text="${doctor.email}"></span></p>
-                        <p class="card-text mb-1"><strong>Address:</strong><br>
-                            <span th:text="${doctor.street} + ', '"></span>
-                            <span th:text="${doctor.city} + ', '"></span>
-                            <span th:text="${doctor.state} + ' '"></span>
-                            <span th:text="${doctor.postcode} + ', '"></span>
-                            <span th:text="${doctor.country}"></span>
-                        </p>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        <a th:href="@{/doctor/update/{id}(id=${doctor.doctorId})}" class="btn btn-success">
-                            <i class="fas fa-user-edit"></i>
-                        </a>
-                        <form th:action="@{/doctor/delete/{id}(id=${doctor.doctorId})}" method="get">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">
-                                <i class="fas fa-user-times"></i>
-                            </button>
-                        </form>
+                <div class="card doctor-card h-100 border-0 shadow-sm position-relative">
+                    <div class="row g-0">
+
+                        <!-- Doctor Info -->
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <h5 class="card-title text-black mb-1" th:text="${doctor.name}">Dr. Ahmad bin Ismail</h5>
+                                <span class="badge bg-primary mb-3" th:text="'Room: ' + ${doctor.room}">Room A101</span>
+
+                                <p class="mb-1">
+                                    <i class="fas fa-envelope me-2 text-secondary"></i>
+                                    <span class="text-muted">Email:</span>
+                                    <span th:text="${doctor.email}">ahmad.ismail@klenex.com</span>
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-phone me-2 text-secondary"></i>
+                                    <span class="text-muted">Phone:</span>
+                                    <span th:text="${doctor.phone}">01122334455</span>
+                                </p>
+                                <p class="mb-0">
+                                    <i class="fas fa-map-marker-alt me-2 text-secondary"></i>
+                                    <span class="text-muted">Address:</span>
+                                    <span th:text="${doctor.street + ', ' + doctor.postcode + ', ' + doctor.city + ', ' + doctor.state + ', ' + doctor.country}">
+                                        22 Jalan Medika, 50400, Kuala Lumpur, Wilayah Persekutuan, Malaysia
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Doctor Image + Icons -->
+                        <div class="col-md-4 position-relative">
+                            <img th:src="@{/images/{img}(img=${doctor.image})}"
+                                 class="img-fluid rounded-start"
+                                 alt="Doctor Image"
+                                 style="object-fit: cover; height: 100%; width: 100%;">
+
+                            <div class="icon-container gy-0">
+                                <!-- Edit Icon -->
+                                <a th:href="@{/doctor/update/{id}(id=${doctor.doctorId})}" title="Edit Doctor">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <!-- Delete Icon -->
+                                <form th:action="@{/doctor/delete/{id}(id=${doctor.doctorId})}" method="post"
+                                      onsubmit="return confirm('Are you sure you want to delete this doctor?')">
+                                    <button type="submit" title="Delete Doctor">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function filterDoctors() {
-        const input = document.getElementById('searchInput');
-        const filter = input.value.toLowerCase();
-        const cards = document.querySelectorAll('.doctor-card');
-
-        cards.forEach(card => {
-            const name = card.querySelector('.card-title').textContent.toLowerCase();
-            card.closest('.col').style.display = name.includes(filter) ? '' : 'none';
-        });
-    }
-</script>
 </body>
 </html>
