@@ -232,5 +232,4 @@ public class TreatmentController {
         model.addAttribute("activePage", "treatment");
         return "treatment/view-treatment";
     }
-
 }

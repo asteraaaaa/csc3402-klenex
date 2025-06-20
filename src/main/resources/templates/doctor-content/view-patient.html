@@ -90,7 +90,7 @@
                             <td th:text="${treatment.prescription}">Flu</td>
 
                             <td>
-                                <a th:href="@{/treatment/view/{id}(id=${patient.patientId})}"
+                                <a th:href="@{/treatment/view/{id}(id=${treatment.treatmentId})}"
                                    class="text-black"
                                    title="View treatment">
                                     <i class="fas fa-eye fa-sm"></i>
