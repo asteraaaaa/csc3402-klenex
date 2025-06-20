@@ -68,4 +68,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<Appointment> findByPatientNameContainingIgnoreCase(String searchTerm) {
         return List.of();
     }
+
+    @Override
+    public List<Appointment> findAppointmentByDoctorId(Integer doctorId) {
+        return appointmentRepository.findByDoctor_DoctorId(doctorId);
+    }
 }

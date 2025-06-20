@@ -18,4 +18,5 @@ public interface AppointmentService {
     List<Appointment> findByTimeContaining(String time);
     List<Appointment> findByStatus(String status);
     List<Appointment> findByPatientNameContainingIgnoreCase(String searchTerm);
+    List<Appointment> findAppointmentByDoctorId(Integer doctorId);
 }

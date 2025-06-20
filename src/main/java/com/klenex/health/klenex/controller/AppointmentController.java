@@ -1,13 +1,8 @@
 package com.klenex.health.klenex.controller;
 
-import com.klenex.health.klenex.model.Appointment;
-import com.klenex.health.klenex.model.Patient;
-import com.klenex.health.klenex.model.Treatment;
-import com.klenex.health.klenex.service.AppointmentService;
-import com.klenex.health.klenex.service.DoctorService;
-import com.klenex.health.klenex.service.PatientService;
+import com.klenex.health.klenex.model.*;
+import com.klenex.health.klenex.service.*;
 
-import com.klenex.health.klenex.service.TreatmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Controller
@@ -27,6 +23,8 @@ public class AppointmentController {
 
     @Autowired
     private TreatmentService treatmentService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService,
@@ -41,10 +39,25 @@ public class AppointmentController {
 
 
     @GetMapping("")
-    public String listAppointments(Model model) {
-        model.addAttribute("appointments", appointmentService.listAllAppointments());
-        model.addAttribute("activePage", "appointment");
-        return "admin/appointment";
+    public String listAppointments(Model model, Principal principal) {
+        String email = principal.getName();
+        User user = userService.findUserByEmail(email);
+
+        boolean isAdmin = user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            model.addAttribute("appointments", appointmentService.listAllAppointments());
+            model.addAttribute("activePage", "appointment");
+            return "admin/appointment";
+        } else {
+            Doctor doctor = doctorService.findByUserEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+            model.addAttribute("doctor", doctor);
+            model.addAttribute("appointments", appointmentService.findAppointmentByDoctorId(doctor.getDoctorId()));
+            model.addAttribute("activePage", "appointment");
+            return "doctor-content/appointment";
+        }
     }
 
     @GetMapping("/signup")
@@ -156,12 +169,30 @@ public class AppointmentController {
     }
 
     @GetMapping("/view/{id}")
-    public String viewAppointment(@PathVariable("id") Long id, Model model) {
-        Optional<Appointment> appointment = appointmentService.findAppointmentById(id);
-        if (appointment.isEmpty()) {
-            throw new IllegalArgumentException("Invalid appointment ID: " + id);
+    public String viewAppointment(@PathVariable("id") Long id, Model model, Principal principal) {
+        String email = principal.getName();
+        User user = userService.findUserByEmail(email);
+
+        Appointment appointment = appointmentService.findAppointmentById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid appointment ID: " + id));
+
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            Doctor doctor = doctorService.findByUserEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+            if (!appointment.getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
+                throw new SecurityException("Access denied: You are not assigned to this appointment.");
+            }
+
+            model.addAttribute("doctor", doctor);
+            model.addAttribute("appointment", appointment);
+            model.addAttribute("activePage", "appointment");
+            return "doctor-content/view-appointment";
         }
-        model.addAttribute("appointment", appointment.get());
+
+        model.addAttribute("appointment", appointment);
         model.addAttribute("activePage", "appointment");
         return "appointment/view-appointment";
     }
