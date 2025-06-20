@@ -1,5 +1,6 @@
 package com.klenex.health.klenex.config;
 
+import com.klenex.health.klenex.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,23 +17,26 @@ public class SpringSecurity {
     public static PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
     @Bean
-    public SecurityFilterChain customSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain customSecurityFilterChain(HttpSecurity http, CustomUserDetailsService customUserDetailsService) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                         .requestMatchers("/registration","/registration/**").permitAll()
                         .requestMatchers("/login", "/login/**").permitAll()
-                        .requestMatchers("/doctor/**").hasAnyRole("DOCTOR", "ADMIN")
-                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/doctor/**").hasRole("DOCTOR")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/doctors", true)
+                        .defaultSuccessUrl("/", true)
+                        //.successHandler(customUserDetailsService)
                         .permitAll()
                 )
-                .logout((logout) -> logout.permitAll())
+                .logout((logout) -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll())
                 .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedPage("/access-denied"))
                 .csrf((csrf) -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")))
                 .headers((headers) -> headers.disable());

@@ -37,6 +37,25 @@ public class DashboardController {
     }
 
     @GetMapping("/")
+    public String redirectToDashboard(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        Doctor doctor = doctorService.findByUserEmail(email).orElse(null);
+
+        // If doctor exists, it's a doctor login
+        if (doctor != null) {
+            return "redirect:/doctors";
+        }
+
+        // Else assume it's an admin
+        // You can also check role here explicitly if needed (e.g., via userService)
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/admin")
     public String dashboard(Model model) {
         // Get counts directly from services
         model.addAttribute("totalDoctors", doctorService.listAllDoctors().size());
