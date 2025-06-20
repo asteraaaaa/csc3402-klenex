@@ -23,7 +23,7 @@ public class SpringSecurity {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                         .requestMatchers("/registration","/registration/**").permitAll()
                         .requestMatchers("/login", "/login/**").permitAll()
-                        .requestMatchers("/doctor/**").hasRole("DOCTOR")
+                        .requestMatchers("/doctor/**").hasAnyRole("DOCTOR", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
