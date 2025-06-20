@@ -1,45 +1,46 @@
-<div th:fragment="docSidebar">
+<div th:fragment="sidebar">
     <nav id="sidebar" class="sidebar d-flex flex-column bg-light border-end">
-
-        <div class="text-center p-3 border-bottom bg-white">
-            <img th:src="@{/images/{img}(img=${loggedInDoctor.image})}" alt="Doctor Image" class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
-            <h5 class="mb-0" th:text="${loggedInDoctor.name}"></h5>
-            <small class="text-muted" th:text="'Room: ' + ${loggedInDoctor.room}"></small>
-        </div>
-
         <ul class="nav flex-column pt-3">
+
             <li class="nav-item">
-                <a class="nav-link [[${#httpServletRequest.requestURI == '/'} ? 'active' : '']]" th:href="@{/}">
+                <a class="nav-link">
+                    <img th:src="@{'/images/' + ${doctor.image}}" alt="Doctor Image" class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                    <h5 class="mb-0" th:text="${doctor.name}"></h5>
+                    <small class="text-muted" th:text="'Room: ' + ${doctor.room}"></small>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   th:href="@{/doctor/{doctorId}/dashboard(doctorId=${doctor.doctorId})}"
+                   th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
                     <i class="bi bi-speedometer2 me-2"></i>
                     <span class="nav-link-text">Dashboard</span>
                 </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link [[${#httpServletRequest.requestURI.startsWith('/doctor')} ? 'active' : '']]" th:href="@{/doctor}">
-                    <i class="fas fa-user-doctor me-2"></i>
-                    <span class="nav-link-text">Doctors</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link [[${#httpServletRequest.requestURI.startsWith('/patient')} ? 'active' : '']]" th:href="@{/patient}">
+                <a class="nav-link"
+                   th:href="@{/doctor/{doctorId}/patient(doctorId=${doctor.doctorId})}"
+                   th:classappend="${activePage == 'patient'} ? ' active' : ''">
                     <i class="fas fa-hospital-user me-2"></i>
                     <span class="nav-link-text">Patients</span>
                 </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link [[${#httpServletRequest.requestURI.startsWith('/medication')} ? 'active' : '']]" th:href="@{/medication}">
-                    <i class="fas fa-capsules me-2"></i>
-                    <span class="nav-link-text">Medications</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link [[${#httpServletRequest.requestURI.startsWith('/treatment')} ? 'active' : '']]" th:href="@{/treatment}">
+                <a class="nav-link"
+                   th:href="@{/doctor/{doctorId}/treatment(doctorId=${doctor.doctorId})}"
+                   th:classappend="${activePage == 'treatment'} ? ' active' : ''">
                     <i class="fas fa-stethoscope me-2"></i>
                     <span class="nav-link-text">Treatments</span>
                 </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link [[${#httpServletRequest.requestURI.startsWith('/appointment')} ? 'active' : '']]" th:href="@{/appointment}">
+                <a class="nav-link"
+                   th:href="@{/doctor/{doctorId}/appointment(doctorId=${doctor.doctorId})}"
+                   th:classappend="${activePage == 'appointment'} ? ' active' : ''">
                     <i class="bi bi-calendar2-check me-2"></i>
                     <span class="nav-link-text">Appointments</span>
                 </a>

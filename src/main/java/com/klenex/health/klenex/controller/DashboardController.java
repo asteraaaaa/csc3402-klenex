@@ -114,6 +114,7 @@ public class DashboardController {
         model.addAttribute("totalAppointments", totalAppointments);
         model.addAttribute("completedTreatments", completedTreatments);
         model.addAttribute("totalPatientsSeen", totalPatientsSeen);
+        model.addAttribute("doctor", doctor);
 
         return "doctor/dashboard";
     }
