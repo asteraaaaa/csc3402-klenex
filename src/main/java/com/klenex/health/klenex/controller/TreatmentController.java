@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -20,17 +21,19 @@ public class TreatmentController {
     private final MedicationService medicationService;
     private final PatientService patientService;
     private final DoctorService doctorService;
+    private final UserService userService;
 
     public TreatmentController(TreatmentService treatmentService,
                                AppointmentService appointmentService,
                                MedicationService medicationService,
                                PatientService patientService,
-                               DoctorService doctorService) {
+                               DoctorService doctorService, UserService userService) {
         this.treatmentService = treatmentService;
         this.appointmentService = appointmentService;
         this.medicationService = medicationService;
         this.patientService = patientService;
         this.doctorService = doctorService;
+        this.userService = userService;
     }
 
 
@@ -45,10 +48,25 @@ public class TreatmentController {
     }
 
     @GetMapping("")
-    public String showAllTreatmentsForm(Model model) {
-        model.addAttribute("treatments", treatmentService.listAllTreatments());
-        model.addAttribute("activePage", "treatment");
-        return "admin/treatment";
+    public String showAllTreatmentsForm(Model model, Principal principal) {
+        String email = principal.getName();
+        User user = userService.findUserByEmail(email);
+
+        boolean isAdmin = user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        if(isAdmin) {
+            model.addAttribute("treatments", treatmentService.listAllTreatments());
+            model.addAttribute("activePage", "treatment");
+            return "admin/treatment";
+        } else {
+            Doctor doctor = doctorService.findByUserEmail(email).
+                    orElseThrow(() -> new RuntimeException("Doctor not found"));
+            model.addAttribute("treatments", treatmentService.findTreatmentsByDoctorId(doctor.getDoctorId()));
+            model.addAttribute("doctor", doctor);
+            model.addAttribute("activePage", "treatment");
+            return "doctor-content/treatment";
+        }
     }
 
 //    @GetMapping("/patient/{id}")
@@ -100,12 +118,30 @@ public class TreatmentController {
     }
 
     @GetMapping("/update/{id}")
-    public String showUpdateForm(@PathVariable("id") int id, Model model) {
+    public String showUpdateForm(@PathVariable("id") int id, Model model, Principal principal) {
+        String email = principal.getName();
+        User user = userService.findUserByEmail(email);
+
         Treatment treatment = treatmentService.findTreatmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
 
-        List<Medication> medications = medicationService.listAllMedications();
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
+        if (!isAdmin) {
+            Doctor doctor = doctorService.findByUserEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+            if (!treatment.getAppointment().getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
+                throw new SecurityException("Access denied.");
+            }
+            model.addAttribute("doctor", doctor);
+            model.addAttribute("treatment", treatment);
+            model.addAttribute("medications", medicationService.listAllMedications());
+            model.addAttribute("activePage", "treatment");
+            return "doctor-content/update-treatment";
+        }
+
+        List<Medication> medications = medicationService.listAllMedications();
         model.addAttribute("treatment", treatment);
         model.addAttribute("medications", medications);
         model.addAttribute("activePage", "treatment");
@@ -169,13 +205,31 @@ public class TreatmentController {
 //    }
 
     @GetMapping("/view/{id}")
-    public String viewTreatment(@PathVariable("id") int id, Model model) {
+    public String viewTreatment(@PathVariable("id") int id, Model model, Principal principal) {
+        String email = principal.getName();
+        User user = userService.findUserByEmail(email);
+
         Treatment treatment = treatmentService.findTreatmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
 
+        boolean isAdmin = user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            Doctor doctor = doctorService.findByUserEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+            if (!treatment.getAppointment().getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
+                throw new SecurityException("Access denied: This treatment is not yours.");
+            }
+
+            model.addAttribute("doctor", doctor);
+            model.addAttribute("treatment", treatment);
+            model.addAttribute("activePage", "treatment");
+            return "doctor-content/view-treatment";
+        }
+
         model.addAttribute("treatment", treatment);
         model.addAttribute("activePage", "treatment");
-        int patientId = treatment.getAppointment().getPatient().getPatientId();
         return "treatment/view-treatment";
     }
 

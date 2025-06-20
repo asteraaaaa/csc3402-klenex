@@ -25,7 +25,6 @@ public class SpringSecurity {
                         .requestMatchers("/login", "/login/**").permitAll()
                         .requestMatchers("/doctor/**").hasAnyRole("DOCTOR", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/patient/**").hasAnyRole("DOCTOR", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
