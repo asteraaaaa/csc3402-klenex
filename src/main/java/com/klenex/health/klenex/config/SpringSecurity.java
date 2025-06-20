@@ -19,17 +19,17 @@ public class SpringSecurity {
     public SecurityFilterChain customSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console?**")).permitAll()
-                        .requestMatchers("/registration","/registration?**").permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                        .requestMatchers("/registration","/registration/**").permitAll()
                         .requestMatchers("/login", "/login/**").permitAll()
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/doctor/**").hasAnyRole("DOCTOR", "ADMIN")
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/doctors", true)
                         .permitAll()
                 )
                 .logout((logout) -> logout.permitAll())

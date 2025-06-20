@@ -12,6 +12,5 @@ public interface DoctorService {
     Optional<Doctor> findDoctorById(Integer doctorId);
     Doctor updateDoctor(Doctor doctor);
     void deleteDoctor(Doctor doctor);
-
     Optional<Doctor> findByUserEmail(String email);
 }

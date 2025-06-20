@@ -53,11 +53,15 @@ public class DashboardController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/doctor/dashboard")
-    public String doctorDashboard(Principal principal, Model model) {
+    @GetMapping("/doctors")
+    public String showDoctorDashboard(Model model, Principal principal) {
         String email = principal.getName();
         Doctor doctor = doctorService.findByUserEmail(email)
                 .orElseThrow(() -> new RuntimeException("Doctor not found for " + email));
+
+        if (doctor == null) {
+            return "redirect:/login?error";
+        }
 
         Integer docId = doctor.getDoctorId();
         LocalDate today = LocalDate.now();

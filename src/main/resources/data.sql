@@ -6,13 +6,31 @@ VALUES
     ('Syafiq Abdullah', '0164455667', '55 Jalan Teratai', 'Alor Setar', 'Kedah', '05100', 'Malaysia', '1987-07-22', 'M'),
     ('Tan Mei Ling', '0198765432', '31 Lorong Mutiara', 'Georgetown', 'Penang', '10200', 'Malaysia', '1992-12-05', 'F');
 
-INSERT INTO doctor (name, room, phone, email, password, street, city, state, postcode, country, image)
+INSERT INTO roles (id, name) VALUES (3, 'ROLE_DOCTOR');
+
+INSERT INTO users (id, email, name, password)
 VALUES
-    ('Dr. Ahmad bin Ismail', 'A101', '01122334455', 'ahmad.ismail@klenex.com', 'ahmad123', '22 Jalan Medika', 'Kuala Lumpur', 'Wilayah Persekutuan', '50400', 'Malaysia', 'ahmad.jpg'),
-    ('Dr. Priya a/p Rajan', 'B205', '0129988776', 'priya.rajan@klenex.com', 'priya123', '45 Jalan Sehat', 'Petaling Jaya', 'Selangor', '46000', 'Malaysia', 'priya.jpg'),
-    ('Dr. Wong Li Mei', 'C312', '0175544332', 'wong.limei@klenex.com', 'wong123', '8 Taman Perubatan', 'Ipoh', 'Perak', '31400', 'Malaysia', 'wong.jpg'),
-    ('Dr. Siti Nurhaliza binti Mohamad', 'D104', '0198877665', 'siti.nurhaliza@klenex.com', 'siti123', '33 Jalan Sihat', 'Johor Bahru', 'Johor', '80100', 'Malaysia', 'siti.jpg'),
-    ('Dr. Kumar a/l Maniam', 'E209', '0161122334', 'kumar.maniam@klenex.com', 'kumar123', '77 Persiaran Medikal', 'George Town', 'Pulau Pinang', '10200', 'Malaysia', 'kumar.jpg');
+    (1, 'ahmad.ismail@klenex.com', 'Dr. Ahmad bin Ismail', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    (2, 'priya.rajan@klenex.com', 'Dr. Priya a/p Rajan', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    (3, 'wong.limei@klenex.com', 'Dr. Wong Li Mei', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    (4, 'siti.nurhaliza@klenex.com', 'Dr. Siti Nurhaliza binti Mohamad', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    (5, 'kumar.maniam@klenex.com', 'Dr. Kumar a/l Maniam', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe');
+
+INSERT INTO users_roles (user_id, role_id)
+VALUES
+    (1, 3),
+    (2, 3),
+    (3, 3),
+    (4, 3),
+    (5, 3);
+
+INSERT INTO doctor (name, room, phone, email, password, street, city, state, postcode, country, image, user_id)
+VALUES
+    ('Dr. Ahmad bin Ismail', 'A101', '01122334455', 'ahmad.ismail@klenex.com', 'ahmad123', '22 Jalan Medika', 'Kuala Lumpur', 'Wilayah Persekutuan', '50400', 'Malaysia', 'ahmad.jpg', 1),
+    ('Dr. Priya a/p Rajan', 'B205', '0129988776', 'priya.rajan@klenex.com', 'priya123', '45 Jalan Sehat', 'Petaling Jaya', 'Selangor', '46000', 'Malaysia', 'priya.jpg', 2),
+    ('Dr. Wong Li Mei', 'C312', '0175544332', 'wong.limei@klenex.com', 'wong123', '8 Taman Perubatan', 'Ipoh', 'Perak', '31400', 'Malaysia', 'wong.jpg', 3),
+    ('Dr. Siti Nurhaliza binti Mohamad', 'D104', '0198877665', 'siti.nurhaliza@klenex.com', 'siti123', '33 Jalan Sihat', 'Johor Bahru', 'Johor', '80100', 'Malaysia', 'siti.jpg', 4),
+    ('Dr. Kumar a/l Maniam', 'E209', '0161122334', 'kumar.maniam@klenex.com', 'kumar123', '77 Persiaran Medikal', 'George Town', 'Pulau Pinang', '10200', 'Malaysia', 'kumar.jpg', 5);
 
 INSERT INTO medication (name, medication_group, strength, dosage_form, quantity)
 VALUES
@@ -45,20 +63,3 @@ INSERT INTO prescribe (treatment_id, drug_id) VALUES
     (3, 5), -- Ventolin
     (4, 4); -- Simvastatin
 
-INSERT INTO roles (id, name) VALUES (3, 'ROLE_DOCTOR');
-
-INSERT INTO users (email, name, password)
-VALUES
-    ('ahmad.ismail@klenex.com', 'Dr. Ahmad bin Ismail', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
-    ('priya.rajan@klenex.com', 'Dr. Priya a/p Rajan', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
-    ('wong.limei@klenex.com', 'Dr. Wong Li Mei', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
-    ('siti.nurhaliza@klenex.com', 'Dr. Siti Nurhaliza binti Mohamad', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
-    ('kumar.maniam@klenex.com', 'Dr. Kumar a/l Maniam', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe');
-
-INSERT INTO users_roles (user_id, role_id)
-VALUES
-    (1, 3),
-    (2, 3),
-    (3, 3),
-    (4, 3),
-    (5, 3);

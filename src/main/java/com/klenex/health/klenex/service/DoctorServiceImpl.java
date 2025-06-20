@@ -1,7 +1,10 @@
 package com.klenex.health.klenex.service;
 
 import com.klenex.health.klenex.model.Doctor;
+import com.klenex.health.klenex.model.User;
 import com.klenex.health.klenex.repository.DoctorRepository;
+import com.klenex.health.klenex.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +12,11 @@ import java.util.Optional;
 @Service
 public class DoctorServiceImpl implements DoctorService {
 
+    @Autowired
     private final DoctorRepository doctorRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public DoctorServiceImpl(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
@@ -41,6 +48,6 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Optional<Doctor> findByUserEmail(String email) {
-        return Optional.empty();
+        return doctorRepository.findByUserEmail(email);
     }
 }
