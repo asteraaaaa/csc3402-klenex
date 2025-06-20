@@ -6,7 +6,10 @@ VALUES
     ('Syafiq Abdullah', '0164455667', '55 Jalan Teratai', 'Alor Setar', 'Kedah', '05100', 'Malaysia', '1987-07-22', 'M'),
     ('Tan Mei Ling', '0198765432', '31 Lorong Mutiara', 'Georgetown', 'Penang', '10200', 'Malaysia', '1992-12-05', 'F');
 
-INSERT INTO roles (id, name) VALUES (3, 'ROLE_DOCTOR');
+INSERT INTO roles (id, name)
+VALUES
+    (1, 'ROLE_ADMIN'),
+    (3, 'ROLE_DOCTOR');
 
 INSERT INTO users (id, email, name, password)
 VALUES
@@ -14,7 +17,8 @@ VALUES
     (2, 'priya.rajan@klenex.com', 'Dr. Priya a/p Rajan', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
     (3, 'wong.limei@klenex.com', 'Dr. Wong Li Mei', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
     (4, 'siti.nurhaliza@klenex.com', 'Dr. Siti Nurhaliza binti Mohamad', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
-    (5, 'kumar.maniam@klenex.com', 'Dr. Kumar a/l Maniam', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe');
+    (5, 'kumar.maniam@klenex.com', 'Dr. Kumar a/l Maniam', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    (100, 'admin@klenex.com', 'Admin User', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe');
 
 INSERT INTO users_roles (user_id, role_id)
 VALUES
@@ -22,7 +26,8 @@ VALUES
     (2, 3),
     (3, 3),
     (4, 3),
-    (5, 3);
+    (5, 3),
+    (100, 1);
 
 INSERT INTO doctor (name, room, phone, email, password, street, city, state, postcode, country, image, user_id)
 VALUES

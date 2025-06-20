@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout-doctor}">
+
+<head>
+    <title>Treatment</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .center-align {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container py-0">
+
+        <!-- Search Form -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <form class="d-flex align-items-end gap-2 flex-wrap flex-md-nowrap">
+                    <div class="form-group mb-0" style="min-width: 180px;">
+                        <label for="searchBy" class="font-weight-bold">Search By</label>
+                        <select class="form-control" id="searchBy">
+                            <option>Date</option>
+                            <option>Patient</option>
+                            <option>Doctor</option>
+                            <option>Diagnosis</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex-grow-1 mb-0">
+                        <label for="searchTerm" class="font-weight-bold">Search Term</label>
+                        <input type="text" class="form-control" id="searchTerm" placeholder="Type here...">
+                    </div>
+                    <div class="form-group mb-0">
+                        <button type="submit" class="btn btn-primary mt-2">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Treatment Table -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-light font-weight-bold">
+                <i class="fas fa-notes-medical"></i> Treatment List
+            </div>
+            <div class="card-body p-3">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover mb-0">
+                        <thead class="table-primary">
+                        <tr>
+                            <th class="center-align">Date</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Diagnosis</th>
+                            <th>Status</th>
+                            <th class="center-align">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${treatments.isEmpty()}">
+                            <td colspan="8" class="text-center text-muted py-3">No Treatments Available</td>
+                        </tr>
+                        <tr th:each="treatment : ${treatments}">
+                            <td class="center-align" th:text="${#dates.format(treatment.appointment.date, 'dd-MM-yyyy')}">01-01-2025</td>
+                            <td th:text="${treatment.appointment.patient.name}">John Doe</td>
+                            <td th:text="${treatment.appointment.doctor.name}">Dr. Smith</td>
+                            <td th:switch="${treatment.appointment.status.name()}">
+                                <span th:case="'Scheduled'" class="badge bg-warning text-dark" th:text="${treatment.appointment.status.name()}">Scheduled</span>
+                                <span th:case="'Comfirmed'" class="badge bg-primary" th:text="${treatment.appointment.status.name()}">Comfirmed</span>
+                                <span th:case="'Completed'" class="badge bg-success" th:text="${treatment.appointment.status.name()}">Completed</span>
+                                <span th:case="'Canceled'" class="badge bg-danger" th:text="${treatment.appointment.status.name()}">Canceled</span>
+                                <span th:case="*" class="badge bg-secondary" th:text="${treatment.appointment.status.name()}">UNKNOWN</span>
+                            </td>
+
+                            <td th:text="${treatment.diagnosis}">Flu</td>
+
+
+                            <td class="text-nowrap center-align">
+                                <div class="gap-2">
+                                    <a th:href="@{/treatment/view/{id}(id=${treatment.treatmentId})}"
+                                       class="text-black"
+                                       title="View details">
+                                        <i class="fas fa-eye fa-sm"></i>
+                                    </a>
+                                    <a th:href="@{/treatment/update/{id}(id=${treatment.treatmentId})}"
+                                       class="text-black"
+                                       title="Edit Treatment">
+                                        <i class="fas fa-edit fa-sm"></i>
+                                    </a>
+                                </div>
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

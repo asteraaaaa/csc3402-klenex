@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -37,6 +36,25 @@ public class DashboardController {
     }
 
     @GetMapping("/")
+    public String redirectToDashboard(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        Doctor doctor = doctorService.findByUserEmail(email).orElse(null);
+
+        // If doctor exists, it's a doctor login
+        if (doctor != null) {
+            return "redirect:/doctors";
+        }
+
+        // Else assume it's an admin
+        // You can also check role here explicitly if needed (e.g., via userService)
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/admin")
     public String dashboard(Model model) {
         // Get counts directly from services
         model.addAttribute("totalDoctors", doctorService.listAllDoctors().size());
@@ -116,7 +134,8 @@ public class DashboardController {
         model.addAttribute("totalAppointments", totalAppointments);
         model.addAttribute("completedTreatments", completedTreatments);
         model.addAttribute("totalPatientsSeen", totalPatientsSeen);
+        model.addAttribute("doctor", doctor);
 
-        return "doctor/dashboard";
+        return "doctor-content/dashboard";
     }
 }
