@@ -44,6 +44,7 @@ public class DashboardController {
         model.addAttribute("totalAppointments", appointmentService.listAllAppointments().size());
         model.addAttribute("totalMedications", medicationService.listAllMedications().size());
 
+        model.addAttribute("activePage", "dashboard");
         // Get recent appointments (last 10)
         List<Appointment> recentAppointments = appointmentService.listAllAppointments().stream()
                 .limit(10)
@@ -59,6 +60,7 @@ public class DashboardController {
         Doctor doctor = doctorService.findByUserEmail(email)
                 .orElseThrow(() -> new RuntimeException("Doctor not found for " + email));
 
+        model.addAttribute("activePage", "dashboard");
         if (doctor == null) {
             return "redirect:/login?error";
         }
