@@ -1,8 +1,9 @@
 package com.klenex.health.klenex.controller;
 
-import com.klenex.health.klenex.model.Medication;
-import com.klenex.health.klenex.model.Patient;
-import com.klenex.health.klenex.model.Treatment;
+import com.klenex.health.klenex.model.*;
+import com.klenex.health.klenex.repository.UserRepository;
+import com.klenex.health.klenex.service.AppointmentService;
+import com.klenex.health.klenex.service.DoctorService;
 import com.klenex.health.klenex.service.PatientService;
 import com.klenex.health.klenex.service.TreatmentService;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -19,17 +21,38 @@ public class PatientController {
 
     private final PatientService patientService;
     private final TreatmentService treatmentService;
+    private final AppointmentService appointmentService;
+    private final DoctorService doctorService;
+    private final UserRepository userRepository;
 
-    public PatientController(PatientService patientService, TreatmentService treatmentService) {
+    public PatientController(PatientService patientService, TreatmentService treatmentService, AppointmentService appointmentService, DoctorService doctorService, UserRepository userRepository) {
         this.treatmentService = treatmentService;
         this.patientService = patientService;
+        this.appointmentService = appointmentService;
+        this.doctorService = doctorService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("")
-    public String showAllPatientsForm(Model model) {
-        model.addAttribute("patients", patientService.listAllPatients());
-        model.addAttribute("activePage", "patient");
-        return "admin/patient";
+    public String showAllPatientsForm(Model model, Principal principal) {
+        String email = principal.getName();
+        User user = userRepository.findByEmail(email);
+
+        boolean isAdmin = user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            model.addAttribute("patients", patientService.listAllPatients());
+            model.addAttribute("activePage", "patient");
+            return "admin/patient";
+        } else {
+            Doctor doctor = doctorService.findByUserEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+            model.addAttribute("doctor", doctor);
+            model.addAttribute("patients", patientService.listPatientByDoctorId(doctor.getDoctorId()));
+            model.addAttribute("activePage", "patient");
+            return "doctor-content/patient";
+        }
     }
 
     @GetMapping("signup")
@@ -86,15 +109,39 @@ public class PatientController {
     }
 
     @GetMapping("view/{id}")
-    public String viewPatient(@PathVariable("id") long id, Model model) {
+    public String viewPatient(@PathVariable("id") long id, Model model, Principal principal) {
         model.addAttribute("activePage", "patient");
-        Patient patient = patientService.findPatientById((int) id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + (int) id));
 
+        String email = principal.getName();
+        User user = userRepository.findByEmail(email);
+
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        // Retrieve patient
+        Patient patient = patientService.findPatientById((int) id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + id));
+
+        // Retrieve treatments
         List<Treatment> treatments = treatmentService.findTreatmentsByPatientId((int) id);
         model.addAttribute("treatments", treatments);
         model.addAttribute("patient", patient);
-        return "patient/view-patient";
+
+        if (isAdmin) {
+            return "patient/view-patient";
+        } else {
+            Doctor doctor = doctorService.findByUserEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+            // Check access: does the patient belong to this doctor via any appointment?
+            boolean hasAccess = appointmentService.listAllAppointments().stream()
+                    .filter(a -> a.getDoctor().getDoctorId().equals(doctor.getDoctorId()))
+                    .anyMatch(a -> a.getPatient().getPatientId() == id);
+
+            model.addAttribute("doctor", doctor); // for sidebar image
+            model.addAttribute("layout", "layout-doctor");
+            return "doctor-content/view-patient";
+        }
     }
 
     @PostMapping("delete/{id}")

@@ -12,7 +12,7 @@
 
             <li class="nav-item">
                 <a class="nav-link"
-                   th:href="@{/doctor/{doctorId}/dashboard(doctorId=${doctor.doctorId})}"
+                   th:href="@{/}"
                    th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
                     <i class="bi bi-speedometer2 me-2"></i>
                     <span class="nav-link-text">Dashboard</span>
@@ -21,7 +21,7 @@
 
             <li class="nav-item">
                 <a class="nav-link"
-                   th:href="@{/doctor/{doctorId}/patient(doctorId=${doctor.doctorId})}"
+                   th:href="@{/patient}"
                    th:classappend="${activePage == 'patient'} ? ' active' : ''">
                     <i class="fas fa-hospital-user me-2"></i>
                     <span class="nav-link-text">Patients</span>
@@ -30,7 +30,7 @@
 
             <li class="nav-item">
                 <a class="nav-link"
-                   th:href="@{/doctor/{doctorId}/treatment(doctorId=${doctor.doctorId})}"
+                   th:href="@{/treatment}"
                    th:classappend="${activePage == 'treatment'} ? ' active' : ''">
                     <i class="fas fa-stethoscope me-2"></i>
                     <span class="nav-link-text">Treatments</span>
@@ -39,7 +39,7 @@
 
             <li class="nav-item">
                 <a class="nav-link"
-                   th:href="@{/doctor/{doctorId}/appointment(doctorId=${doctor.doctorId})}"
+                   th:href="@{/appointment}"
                    th:classappend="${activePage == 'appointment'} ? ' active' : ''">
                     <i class="bi bi-calendar2-check me-2"></i>
                     <span class="nav-link-text">Appointments</span>
