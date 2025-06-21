@@ -3,6 +3,7 @@ package com.klenex.health.klenex.controller;
 import com.klenex.health.klenex.model.Appointment;
 import com.klenex.health.klenex.model.AppointmentStatus;
 import com.klenex.health.klenex.model.Doctor;
+import com.klenex.health.klenex.model.User;
 import com.klenex.health.klenex.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,17 +23,19 @@ public class DashboardController {
     private final AppointmentService appointmentService;
     private final MedicationService medicationService;
     private final TreatmentService treatmentService;
+    private final UserService userService;
 
     @Autowired
     public DashboardController(DoctorService doctorService,
                                PatientService patientService,
                                AppointmentService appointmentService,
-                               MedicationService medicationService, TreatmentService treatmentService) {
+                               MedicationService medicationService, TreatmentService treatmentService, UserService userService) {
         this.doctorService = doctorService;
         this.patientService = patientService;
         this.appointmentService = appointmentService;
         this.medicationService = medicationService;
         this.treatmentService = treatmentService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -42,16 +45,21 @@ public class DashboardController {
         }
 
         String email = principal.getName();
-        Doctor doctor = doctorService.findByUserEmail(email).orElse(null);
+        User user = userService.findUserByEmail(email);
 
+        Doctor doctor = doctorService.findByUserEmail(email).orElse(null);
         // If doctor exists, it's a doctor login
         if (doctor != null) {
             return "redirect:/doctors";
         }
 
-        // Else assume it's an admin
-        // You can also check role here explicitly if needed (e.g., via userService)
-        return "redirect:/admin";
+        boolean isStaff = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
+        if (isStaff) {
+            return "redirect:/admin";
+        }
+
+       return "redirect:/admin";
     }
 
     @GetMapping("/admin")
@@ -61,8 +69,8 @@ public class DashboardController {
         model.addAttribute("totalPatients", patientService.listAllPatients().size());
         model.addAttribute("totalAppointments", appointmentService.listAllAppointments().size());
         model.addAttribute("totalMedications", medicationService.listAllMedications().size());
-
         model.addAttribute("activePage", "dashboard");
+
         // Get recent appointments (last 10)
         List<Appointment> recentAppointments = appointmentService.listAllAppointments().stream()
                 .limit(10)

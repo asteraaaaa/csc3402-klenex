@@ -46,7 +46,10 @@ public class AppointmentController {
         boolean isAdmin = user.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
-        if (isAdmin) {
+        boolean isStaff = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
+
+        if (isAdmin || isStaff) {
             model.addAttribute("appointments", appointmentService.listAllAppointments());
             model.addAttribute("activePage", "appointment");
             return "admin/appointment";
@@ -179,21 +182,23 @@ public class AppointmentController {
         boolean isAdmin = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
-        if (!isAdmin) {
-            Doctor doctor = doctorService.findByUserEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
-            if (!appointment.getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
-                throw new SecurityException("Access denied: You are not assigned to this appointment.");
-            }
+        boolean isStaff = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
 
-            model.addAttribute("doctor", doctor);
+        if (isAdmin || isStaff) {
             model.addAttribute("appointment", appointment);
             model.addAttribute("activePage", "appointment");
-            return "doctor-content/view-appointment";
+            return "appointment/view-appointment";
+        }
+        Doctor doctor = doctorService.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        if (!appointment.getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
+            throw new SecurityException("Access denied: You are not assigned to this appointment.");
         }
 
+        model.addAttribute("doctor", doctor);
         model.addAttribute("appointment", appointment);
         model.addAttribute("activePage", "appointment");
-        return "appointment/view-appointment";
+        return "doctor-content/view-appointment";
     }
 }

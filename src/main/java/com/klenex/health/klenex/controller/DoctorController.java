@@ -1,22 +1,27 @@
 package com.klenex.health.klenex.controller;
 
 import com.klenex.health.klenex.model.Doctor;
+import com.klenex.health.klenex.model.User;
 import com.klenex.health.klenex.repository.DoctorRepository;
+import com.klenex.health.klenex.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
 @RequestMapping("/doctor")
 public class DoctorController {
     private final DoctorRepository doctorRepository;
+    private final UserService userService;
 
-    public DoctorController(DoctorRepository doctorRepository) {
+    public DoctorController(DoctorRepository doctorRepository, UserService userService) {
         this.doctorRepository = doctorRepository;
+        this.userService = userService;
     }
 
     @GetMapping("")
@@ -27,10 +32,21 @@ public class DoctorController {
     }
 
     @GetMapping("signup")
-    public String showSignUpForm(Model model) {
-        model.addAttribute("activePage", "doctor");
-        model.addAttribute("doctor", new Doctor());
-        return "doctor/add-doctor";
+    public String showSignUpForm(Model model, Principal principal) {
+        String email = principal.getName();
+        User user = userService.findUserByEmail(email);
+
+        boolean isAdmin = user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+        boolean isStaff = user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
+
+        if (isAdmin) {
+            model.addAttribute("activePage", "doctor");
+            model.addAttribute("doctor", new Doctor());
+            return "doctor/add-doctor";
+        }
+        return null;
     }
 
     @PostMapping("add")

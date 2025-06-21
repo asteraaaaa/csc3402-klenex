@@ -55,7 +55,10 @@ public class TreatmentController {
         boolean isAdmin = user.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
-        if(isAdmin) {
+        boolean isStaff = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
+
+        if(isAdmin || isStaff) {
             model.addAttribute("treatments", treatmentService.listAllTreatments());
             model.addAttribute("activePage", "treatment");
             return "admin/treatment";
@@ -215,21 +218,23 @@ public class TreatmentController {
         boolean isAdmin = user.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
-        if (!isAdmin) {
-            Doctor doctor = doctorService.findByUserEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
-            if (!treatment.getAppointment().getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
-                throw new SecurityException("Access denied: This treatment is not yours.");
-            }
+        boolean isStaff = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
 
-            model.addAttribute("doctor", doctor);
+        if (isAdmin || isStaff) {
             model.addAttribute("treatment", treatment);
             model.addAttribute("activePage", "treatment");
-            return "doctor-content/view-treatment";
+            return "treatment/view-treatment";
+        }
+        Doctor doctor = doctorService.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        if (!treatment.getAppointment().getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
+            throw new SecurityException("Access denied: This treatment is not yours.");
         }
 
+        model.addAttribute("doctor", doctor);
         model.addAttribute("treatment", treatment);
         model.addAttribute("activePage", "treatment");
-        return "treatment/view-treatment";
+        return "doctor-content/view-treatment";
     }
 }

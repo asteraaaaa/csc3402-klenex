@@ -41,7 +41,10 @@ public class PatientController {
         boolean isAdmin = user.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
-        if (isAdmin) {
+        boolean isStaff = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
+
+        if (isAdmin || isStaff) {
             model.addAttribute("patients", patientService.listAllPatients());
             model.addAttribute("activePage", "patient");
             return "admin/patient";
@@ -118,6 +121,9 @@ public class PatientController {
         boolean isAdmin = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
 
+        boolean isStaff = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
+
         // Retrieve patient
         Patient patient = patientService.findPatientById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + id));
@@ -127,7 +133,7 @@ public class PatientController {
         model.addAttribute("treatments", treatments);
         model.addAttribute("patient", patient);
 
-        if (isAdmin) {
+        if (isAdmin || isStaff) {
             return "patient/view-patient";
         } else {
             Doctor doctor = doctorService.findByUserEmail(email)

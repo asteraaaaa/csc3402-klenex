@@ -9,7 +9,8 @@ VALUES
 INSERT INTO roles (id, name)
 VALUES
     (1, 'ROLE_ADMIN'),
-    (3, 'ROLE_DOCTOR');
+    (3, 'ROLE_DOCTOR'),
+    (4, 'ROLE_STAFF');
 
 INSERT INTO users (id, email, name, password)
 VALUES
@@ -18,7 +19,8 @@ VALUES
     (3, 'wong.limei@klenex.com', 'Dr. Wong Li Mei', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
     (4, 'siti.nurhaliza@klenex.com', 'Dr. Siti Nurhaliza binti Mohamad', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
     (5, 'kumar.maniam@klenex.com', 'Dr. Kumar a/l Maniam', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
-    (100, 'admin@klenex.com', 'Admin User', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe');
+    (100, 'admin@klenex.com', 'Admin User', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe'),
+    (101, 'staff@klenex.com', 'Staff', '$2a$12$JGriZzgFwZNEeuIzFcocjug9wb0/G0EJ1nco27FZoCvVLmfpfiiWe');
 
 INSERT INTO users_roles (user_id, role_id)
 VALUES
@@ -27,7 +29,8 @@ VALUES
     (3, 3),
     (4, 3),
     (5, 3),
-    (100, 1);
+    (100, 1),
+    (101, 4);
 
 INSERT INTO doctor (name, room, phone, email, password, street, city, state, postcode, country, image, user_id)
 VALUES
