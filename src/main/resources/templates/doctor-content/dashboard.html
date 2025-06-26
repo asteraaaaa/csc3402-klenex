@@ -105,9 +105,9 @@
                     </thead>
                     <tbody>
                     <tr th:if="${appointments != null} and ${appointments.isEmpty()}">
-                        <td colspan="4"class="text-center py-4 text-muted">No appointments scheduled for today.</td>
+                        <td colspan="4" class="text-center py-4 text-muted">No appointments scheduled for today.</td>
                     </tr>
-                    <tr th:each="appointment : ${appointments}" th:if="${appointment.doctor.id == doctorId}">
+                    <tr th:each="appointment : ${appointments}" th:if="${appointment.doctor.doctorId == doctorId}">
                         <td th:text="${appointment.id}"></td>
                         <td th:text="${appointment.patient.name}"></td>
                         <td th:text="${appointment.time}"></td>
