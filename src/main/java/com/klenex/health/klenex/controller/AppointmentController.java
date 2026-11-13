@@ -5,6 +5,8 @@ import com.klenex.health.klenex.service.*;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +27,8 @@ public class AppointmentController {
     private TreatmentService treatmentService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AccessPolicy accessPolicy;
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService,
@@ -165,36 +169,29 @@ public class AppointmentController {
         return "redirect:/appointment/view/{id}";
     }
 
-    @GetMapping("/delete/{id}")
+    // Deleting changes data, so it is a POST (with the CSRF token the form carries), never a link that
+    // another web page could trigger. Only admins and staff reach it (see SpringSecurity).
+    @PostMapping("/delete/{id}")
     public String deleteAppointment(@PathVariable("id") Long id) {
         appointmentService.deleteAppointmentById(id);
         return "redirect:/appointment";
     }
 
     @GetMapping("/view/{id}")
-    public String viewAppointment(@PathVariable("id") Long id, Model model, Principal principal) {
-        String email = principal.getName();
-        User user = userService.findUserByEmail(email);
-
+    public String viewAppointment(@PathVariable("id") Long id, Model model, Authentication authentication) {
         Appointment appointment = appointmentService.findAppointmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid appointment ID: " + id));
 
-        boolean isAdmin = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+        // a doctor may only open their own appointments
+        accessPolicy.requireAppointment(authentication, appointment);
 
-        boolean isStaff = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
-
-        if (isAdmin || isStaff) {
+        if (accessPolicy.isPrivileged(authentication)) {
             model.addAttribute("appointment", appointment);
             model.addAttribute("activePage", "appointment");
             return "appointment/view-appointment";
         }
-        Doctor doctor = doctorService.findByUserEmail(email)
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
-        if (!appointment.getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
-            throw new SecurityException("Access denied: You are not assigned to this appointment.");
-        }
+        Doctor doctor = accessPolicy.currentDoctor(authentication)
+                .orElseThrow(() -> new AccessDeniedException("No doctor record for this account."));
 
         model.addAttribute("doctor", doctor);
         model.addAttribute("appointment", appointment);

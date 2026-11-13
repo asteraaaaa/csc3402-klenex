@@ -3,6 +3,8 @@ package com.klenex.health.klenex.controller;
 import com.klenex.health.klenex.model.*;
 import com.klenex.health.klenex.service.*;
 import jakarta.validation.Valid;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,12 +24,15 @@ public class TreatmentController {
     private final PatientService patientService;
     private final DoctorService doctorService;
     private final UserService userService;
+    private final AccessPolicy accessPolicy;
 
     public TreatmentController(TreatmentService treatmentService,
                                AppointmentService appointmentService,
                                MedicationService medicationService,
                                PatientService patientService,
-                               DoctorService doctorService, UserService userService) {
+                               DoctorService doctorService, UserService userService,
+                               AccessPolicy accessPolicy) {
+        this.accessPolicy = accessPolicy;
         this.treatmentService = treatmentService;
         this.appointmentService = appointmentService;
         this.medicationService = medicationService;
@@ -121,22 +126,16 @@ public class TreatmentController {
     }
 
     @GetMapping("/update/{id}")
-    public String showUpdateForm(@PathVariable("id") int id, Model model, Principal principal) {
-        String email = principal.getName();
-        User user = userService.findUserByEmail(email);
-
+    public String showUpdateForm(@PathVariable("id") int id, Model model, Authentication authentication) {
         Treatment treatment = treatmentService.findTreatmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
 
-        boolean isAdmin = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+        // a doctor may only edit the treatments of their own appointments
+        accessPolicy.requireTreatment(authentication, treatment);
 
-        if (!isAdmin) {
-            Doctor doctor = doctorService.findByUserEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
-            if (!treatment.getAppointment().getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
-                throw new SecurityException("Access denied.");
-            }
+        if (!accessPolicy.isPrivileged(authentication)) {
+            Doctor doctor = accessPolicy.currentDoctor(authentication)
+                    .orElseThrow(() -> new AccessDeniedException("No doctor record for this account."));
             model.addAttribute("doctor", doctor);
             model.addAttribute("treatment", treatment);
             model.addAttribute("medications", medicationService.listAllMedications());
@@ -156,7 +155,13 @@ public class TreatmentController {
                                   @Valid @ModelAttribute("treatment") Treatment treatment,
                                   BindingResult result,
                                   Model model,
+                                  Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
+        // Check against the stored treatment, not against what the form posted
+        Treatment stored = treatmentService.findTreatmentById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
+        accessPolicy.requireTreatment(authentication, stored);
+
         if (result.hasErrors()) {
             List<Medication> medications = medicationService.listAllMedications();
             model.addAttribute("medications", medications);
@@ -166,9 +171,9 @@ public class TreatmentController {
 
         treatment.setTreatmentId(id);
 
-        // Fetch latest appointment from DB
-        Appointment appointment = appointmentService.findAppointmentById(
-                        treatment.getAppointment().getId())
+        // The treatment keeps the appointment it already belongs to. The appointment id in the form is ignored,
+        // otherwise a doctor could re-point their treatment at (and change the status of) someone else's appointment.
+        Appointment appointment = appointmentService.findAppointmentById(stored.getAppointment().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
         // ⬇️ Apply the status from the form to the fetched appointment
@@ -188,9 +193,16 @@ public class TreatmentController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    // Deleting changes data, so it is a POST (with the CSRF token the form carries), never a link that
+    // another web page could trigger. A doctor may only delete treatments of their own appointments.
+    @PostMapping("/delete/{id}")
     public String deleteTreatment(@PathVariable("id") int id,
+                                  Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
+        Treatment treatment = treatmentService.findTreatmentById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
+        accessPolicy.requireTreatment(authentication, treatment);
+
         treatmentService.deleteTreatmentById(id);
         redirectAttributes.addFlashAttribute("successMessage", "Treatment deleted successfully!");
         return "redirect:/treatment";
@@ -208,29 +220,20 @@ public class TreatmentController {
 //    }
 
     @GetMapping("/view/{id}")
-    public String viewTreatment(@PathVariable("id") int id, Model model, Principal principal) {
-        String email = principal.getName();
-        User user = userService.findUserByEmail(email);
-
+    public String viewTreatment(@PathVariable("id") int id, Model model, Authentication authentication) {
         Treatment treatment = treatmentService.findTreatmentById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid treatment ID: " + id));
 
-        boolean isAdmin = user.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+        // a doctor may only open the treatments of their own appointments
+        accessPolicy.requireTreatment(authentication, treatment);
 
-        boolean isStaff = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
-
-        if (isAdmin || isStaff) {
+        if (accessPolicy.isPrivileged(authentication)) {
             model.addAttribute("treatment", treatment);
             model.addAttribute("activePage", "treatment");
             return "treatment/view-treatment";
         }
-        Doctor doctor = doctorService.findByUserEmail(email)
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
-        if (!treatment.getAppointment().getDoctor().getDoctorId().equals(doctor.getDoctorId())) {
-            throw new SecurityException("Access denied: This treatment is not yours.");
-        }
+        Doctor doctor = accessPolicy.currentDoctor(authentication)
+                .orElseThrow(() -> new AccessDeniedException("No doctor record for this account."));
 
         model.addAttribute("doctor", doctor);
         model.addAttribute("treatment", treatment);

@@ -46,9 +46,18 @@ public class SpringSecurity {
                         .requestMatchers("/doctors").hasRole("DOCTOR")
 
                         .requestMatchers("/medication/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/appointment/**").hasAnyRole("DOCTOR", "ADMIN", "STAFF")
-                        .requestMatchers("/patient/**").hasAnyRole("DOCTOR", "ADMIN", "STAFF")
-                        .requestMatchers("/treatment/**").hasAnyRole("DOCTOR", "ADMIN", "STAFF")
+
+                        // Doctors can look at appointments and patients, and the controllers then limit them to
+                        // their own (see AccessPolicy). Creating, editing and deleting is for admins and staff.
+                        .requestMatchers("/appointment", "/appointment/view/**").hasAnyRole("DOCTOR", "ADMIN", "STAFF")
+                        .requestMatchers("/appointment/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/patient", "/patient/view/**").hasAnyRole("DOCTOR", "ADMIN", "STAFF")
+                        .requestMatchers("/patient/**").hasAnyRole("ADMIN", "STAFF")
+
+                        // Doctors write up the treatments of their own appointments; adding new ones is for admins and staff.
+                        .requestMatchers("/treatment", "/treatment/view/**", "/treatment/update/**", "/treatment/delete/**")
+                                .hasAnyRole("DOCTOR", "ADMIN", "STAFF")
+                        .requestMatchers("/treatment/**").hasAnyRole("ADMIN", "STAFF")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

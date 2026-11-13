@@ -121,11 +121,16 @@
                     </div>
 
                     <div class="form-group d-flex justify-content-end gap-2">
-                        <a class="btn btn-danger" th:href="@{/appointment/delete/{id}(id=${appointment.id})}" onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</a>
+                        <!-- Deleting is a POST with a CSRF token. The form is separate (HTML forms cannot be nested)
+                             and this button submits it through the form attribute. -->
+                        <button type="submit" form="deleteAppointmentForm" class="btn btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</button>
                         <button type="submit" class="btn btn-success">Update</button>
                         <a class="btn btn-dark" th:href="@{/appointment/view/{id}(id=${appointment.id})}">Cancel</a>
                     </div>
                 </form>
+                <form id="deleteAppointmentForm" method="post" style="display: none"
+                      th:action="@{/appointment/delete/{id}(id=${appointment.id})}"></form>
             </div>
         </div>
 

@@ -2,11 +2,14 @@ package com.klenex.health.klenex.controller;
 
 import com.klenex.health.klenex.model.*;
 import com.klenex.health.klenex.repository.UserRepository;
+import com.klenex.health.klenex.service.AccessPolicy;
 import com.klenex.health.klenex.service.AppointmentService;
 import com.klenex.health.klenex.service.DoctorService;
 import com.klenex.health.klenex.service.PatientService;
 import com.klenex.health.klenex.service.TreatmentService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,8 +27,10 @@ public class PatientController {
     private final AppointmentService appointmentService;
     private final DoctorService doctorService;
     private final UserRepository userRepository;
+    private final AccessPolicy accessPolicy;
 
-    public PatientController(PatientService patientService, TreatmentService treatmentService, AppointmentService appointmentService, DoctorService doctorService, UserRepository userRepository) {
+    public PatientController(PatientService patientService, TreatmentService treatmentService, AppointmentService appointmentService, DoctorService doctorService, UserRepository userRepository, AccessPolicy accessPolicy) {
+        this.accessPolicy = accessPolicy;
         this.treatmentService = treatmentService;
         this.patientService = patientService;
         this.appointmentService = appointmentService;
@@ -112,42 +117,26 @@ public class PatientController {
     }
 
     @GetMapping("view/{id}")
-    public String viewPatient(@PathVariable("id") long id, Model model, Principal principal) {
-        model.addAttribute("activePage", "patient");
-
-        String email = principal.getName();
-        User user = userRepository.findByEmail(email);
-
-        boolean isAdmin = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
-
-        boolean isStaff = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
-
+    public String viewPatient(@PathVariable("id") long id, Model model, Authentication authentication) {
         // Retrieve patient
         Patient patient = patientService.findPatientById((int) id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid patient ID: " + id));
 
-        // Retrieve treatments
-        List<Treatment> treatments = treatmentService.findTreatmentsByPatientId((int) id);
-        model.addAttribute("treatments", treatments);
+        // A doctor may only open patients they have an appointment with. Check before loading anything else.
+        accessPolicy.requirePatient(authentication, (int) id);
+
+        model.addAttribute("activePage", "patient");
+        model.addAttribute("treatments", treatmentService.findTreatmentsByPatientId((int) id));
         model.addAttribute("patient", patient);
 
-        if (isAdmin || isStaff) {
+        if (accessPolicy.isPrivileged(authentication)) {
             return "patient/view-patient";
-        } else {
-            Doctor doctor = doctorService.findByUserEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
-
-            // Check access: does the patient belong to this doctor via any appointment?
-            boolean hasAccess = appointmentService.listAllAppointments().stream()
-                    .filter(a -> a.getDoctor().getDoctorId().equals(doctor.getDoctorId()))
-                    .anyMatch(a -> a.getPatient().getPatientId() == id);
-
-            model.addAttribute("doctor", doctor); // for sidebar image
-            model.addAttribute("layout", "layout-doctor");
-            return "doctor-content/view-patient";
         }
+        Doctor doctor = accessPolicy.currentDoctor(authentication)
+                .orElseThrow(() -> new AccessDeniedException("No doctor record for this account."));
+        model.addAttribute("doctor", doctor); // for sidebar image
+        model.addAttribute("layout", "layout-doctor");
+        return "doctor-content/view-patient";
     }
 
     @PostMapping("delete/{id}")
