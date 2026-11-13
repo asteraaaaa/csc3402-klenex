@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -80,8 +81,12 @@ public class DashboardController {
         return "pending";
     }
 
-    /** Spring Security forwards here (with a 403 status) when a logged-in user opens a page their role cannot. */
-    @GetMapping("/access-denied")
+    /**
+     * Spring Security forwards here (with a 403 status) when a logged-in user opens a page their role cannot.
+     * The forward keeps the original method, so this must accept POST as well as GET; otherwise a refused
+     * POST (for example a delete) would show "405 Method Not Allowed" instead of this page.
+     */
+    @RequestMapping("/access-denied")
     public String accessDenied() {
         return "access-denied";
     }

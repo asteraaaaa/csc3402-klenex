@@ -183,6 +183,16 @@ class KlenexRolesTests {
     }
 
     @Test
+    void theAccessDeniedPageAlsoAcceptsAPostBecauseTheForwardKeepsTheMethod() throws Exception {
+        // MockMvc does not follow the forward, so check the target directly: a refused POST is forwarded
+        // here as a POST, and it must show the page rather than "405 Method Not Allowed".
+        String email = newAccount();
+        mvc.perform(post("/access-denied").with(csrf()).with(as(email)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Access denied")));
+    }
+
+    @Test
     @WithUserDetails("admin@klenex.com")
     void accountsThatAlreadyHaveARoleAreSentAwayFromThePendingPage() throws Exception {
         mvc.perform(get("/pending")).andExpect(redirectedUrl("/"));
