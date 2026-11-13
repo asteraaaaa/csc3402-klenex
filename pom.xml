@@ -12,20 +12,14 @@
     <artifactId>Klenex</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Klenex</name>
-    <description>Klenex</description>
-    <url/>
+    <description>Clinic management web app: doctors, patients, appointments, treatments and medication stock, with role-based login (CSC3402 project)</description>
+    <url>https://github.com/asteraaaaa/csc3402-klenex</url>
     <licenses>
-        <license/>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
     </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
     <properties>
         <java.version>17</java.version>
     </properties>
