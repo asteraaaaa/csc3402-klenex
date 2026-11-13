@@ -1,4 +1,4 @@
-<div th:fragment="sidebar">
+<div th:fragment="sidebar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <nav id="sidebar" class="sidebar d-flex flex-column bg-light border-end">
         <ul class="nav flex-column pt-3">
 
@@ -53,6 +53,16 @@
                    th:classappend="${activePage == 'appointment'} ? ' active' : ''">
                     <i class="bi bi-calendar2-check me-2"></i>
                     <span class="nav-link-text">Appointments</span>
+                </a>
+            </li>
+
+            <!-- Only admins can manage accounts and roles -->
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link"
+                   th:href="@{/admin/users}"
+                   th:classappend="${activePage == 'users'} ? ' active' : ''">
+                    <i class="bi bi-people me-2"></i>
+                    <span class="nav-link-text">Users</span>
                 </a>
             </li>
 

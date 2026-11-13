@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 
@@ -73,8 +74,8 @@
             </form>
         </div>
 
-        <!-- Add Button -->
-        <div class="d-flex justify-content-end mb-4">
+        <!-- Add Button (only admins can add, edit or delete doctors) -->
+        <div class="d-flex justify-content-end mb-4" sec:authorize="hasRole('ADMIN')">
             <a href="/doctor/signup" class="btn btn-success">
                 <i class="fas fa-plus-circle"></i> Add New Doctor
             </a>
@@ -120,12 +121,13 @@
 
                         <!-- Doctor Image + Icons -->
                         <div class="col-md-4 position-relative">
-                            <img th:src="@{/images/{img}(img=${doctor.image})}"
+                            <img th:src="@{/images/{img}(img=${doctor.image != null and !#strings.isEmpty(doctor.image) ? doctor.image : 'default-avatar.svg'})}"
                                  class="img-fluid rounded-start"
                                  alt="Doctor Image"
                                  style="object-fit: cover; height: 100%; width: 100%;">
 
-                            <div class="icon-container gy-0" style="display: flex; gap: 0; align-items: center;">
+                            <div class="icon-container gy-0" style="display: flex; gap: 0; align-items: center;"
+                                 sec:authorize="hasRole('ADMIN')">
                                 <!-- Edit Icon -->
                                 <a th:href="@{/doctor/update/{id}(id=${doctor.doctorId})}" title="Edit Doctor">
                                     <i class="fas fa-edit"></i>

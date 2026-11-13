@@ -46,20 +46,48 @@ public class DashboardController {
 
         String email = principal.getName();
         User user = userService.findUserByEmail(email);
-
-        Doctor doctor = doctorService.findByUserEmail(email).orElse(null);
-        // If doctor exists, it's a doctor login
-        if (doctor != null) {
-            return "redirect:/doctors";
+        if (user == null) {
+            return "redirect:/login";
         }
 
-        boolean isStaff = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_STAFF"));
-        if (isStaff) {
+        if (hasRole(user, "ROLE_ADMIN") || hasRole(user, "ROLE_STAFF")) {
             return "redirect:/admin";
         }
 
-       return "redirect:/admin";
+        // a doctor account lands on their own dashboard
+        if (hasRole(user, "ROLE_DOCTOR") && doctorService.findByUserEmail(email).isPresent()) {
+            return "redirect:/doctors";
+        }
+
+        // a freshly registered account has no working role yet
+        return "redirect:/pending";
+    }
+
+    /** Shown to accounts that are logged in but have not been given a role by an admin yet. */
+    @GetMapping("/pending")
+    public String pendingAccount(Model model, Principal principal) {
+        User user = userService.findUserByEmail(principal.getName());
+        if (user == null) {
+            return "redirect:/login";
+        }
+        // someone who already has a working role does not belong here
+        if (hasRole(user, "ROLE_ADMIN") || hasRole(user, "ROLE_STAFF")
+                || (hasRole(user, "ROLE_DOCTOR") && doctorService.findByUserEmail(user.getEmail()).isPresent())) {
+            return "redirect:/";
+        }
+        model.addAttribute("name", user.getName());
+        model.addAttribute("email", user.getEmail());
+        return "pending";
+    }
+
+    /** Spring Security forwards here (with a 403 status) when a logged-in user opens a page their role cannot. */
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
+
+    private static boolean hasRole(User user, String roleName) {
+        return user.getRoles() != null && user.getRoles().stream().anyMatch(r -> r.getName().equals(roleName));
     }
 
     @GetMapping("/admin")
@@ -83,13 +111,13 @@ public class DashboardController {
     @GetMapping("/doctors")
     public String showDoctorDashboard(Model model, Principal principal) {
         String email = principal.getName();
-        Doctor doctor = doctorService.findByUserEmail(email)
-                .orElseThrow(() -> new RuntimeException("Doctor not found for " + email));
+        Doctor doctor = doctorService.findByUserEmail(email).orElse(null);
+        if (doctor == null) {
+            // doctor role but no doctor record linked to this account
+            return "redirect:/pending";
+        }
 
         model.addAttribute("activePage", "dashboard");
-        if (doctor == null) {
-            return "redirect:/login?error";
-        }
 
         Integer docId = doctor.getDoctorId();
         LocalDate today = LocalDate.now();

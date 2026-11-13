@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     List<Doctor> findByNameContainingIgnoreCase(String keyword);
     Optional<Doctor> findByUserEmail(String userEmail);
+    List<Doctor> findAllByEmailIgnoreCase(String email);
 }

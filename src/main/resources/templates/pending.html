@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Account pending - Klenex</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card-box { max-width: 520px; margin: 8vh auto; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card card-box shadow-sm border-0">
+        <div class="card-body p-4 text-center">
+            <i class="fas fa-user-clock fa-3x text-primary mb-3"></i>
+            <h1 class="h4 fw-bold">Your account is waiting for a role</h1>
+            <p class="text-muted mb-1">
+                Hello <strong th:text="${name}">there</strong>, your account
+                (<span th:text="${email}">you@example.com</span>) has been created.
+            </p>
+            <p class="text-muted">
+                A Klenex administrator needs to give it a role before you can use the clinic pages.
+                Please ask them to assign one, then log in again.
+            </p>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt me-1"></i>Log out
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

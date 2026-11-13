@@ -44,6 +44,6 @@ public class LoginController {
         return "redirect:/registration?success";
     }
 
-    @GetMapping("/logout")
-    public String userLogout() { return "redirect:/login?logout"; }
+    // Logging out is handled by Spring Security as a POST to /logout (see the header). A GET /logout that
+    // only redirected would look like a logout while leaving the session open, so there is none.
 }
