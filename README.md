@@ -24,9 +24,11 @@ It is an academic group project for **CSC3402**. **It is not for clinical use.**
   add, edit and delete doctors
 - **Users and roles** (admins only): see every account and give each person one role
 - **Doctor area**: each doctor gets their own dashboard (today's appointments, pending treatments and
-  medications, patients seen), plus their appointments, patients and treatments
+  medications, patients seen), plus their appointments, patients and treatments. **A doctor can only
+  open their own records**, never another doctor's
 - **Treatments** link an appointment to a diagnosis, a prescription and the medications prescribed
-- **Security basics**: BCrypt-hashed passwords, CSRF protection on every form, logout that really ends the session
+- **Security basics**: BCrypt-hashed passwords, CSRF protection on every form, logout that really ends the
+  session, and every delete is a POST with a CSRF token (no delete links)
 
 | Users and roles (admin) | Waiting for a role |
 |---|---|
@@ -82,12 +84,26 @@ and records in the demo data are fictional.
 | `/doctor` (doctor list) | yes | yes | no | no |
 | Add, edit, delete doctors (`/doctor/...`) | yes | no | no | no |
 | `/admin/users` (assign roles) | yes | no | no | no |
-| `/patient`, `/appointment`, `/treatment` | yes | yes | yes | no |
+| Open appointments, patients and treatments | all | all | **own only** | no |
+| Edit a treatment, delete a treatment | all | all | **own only** | no |
+| Add, edit or delete appointments and patients, add treatments | yes | yes | no | no |
 | `/doctors` (own dashboard) | no | no | yes | no |
 | `/pending` (waiting for a role) | any logged-in account without a working role | | | |
 
 A page your role cannot open shows an **Access denied** page (HTTP 403). The rules live in
 [`SpringSecurity.java`](src/main/java/com/klenex/health/klenex/config/SpringSecurity.java).
+
+### What "own" means for a doctor
+
+The URL rules above decide which *roles* may open a page; [`AccessPolicy`](src/main/java/com/klenex/health/klenex/service/AccessPolicy.java)
+then checks the individual record. A doctor may open:
+
+- an **appointment** that is assigned to them,
+- the **treatment** of one of those appointments, and
+- a **patient** they have an appointment with.
+
+Anything else is refused with the Access denied page, even if the doctor types the address by hand.
+When a doctor edits a treatment, the appointment it belongs to cannot be changed through the form.
 
 ### Giving a new account a role
 
@@ -120,7 +136,7 @@ src/main/resources/
   templates/     Thymeleaf pages (admin, doctor, patient, appointment, ...)
   static/        CSS, JS and doctor avatar images
   data.sql       demo data and accounts
-src/test/        41 integration tests (MockMvc)
+src/test/        58 integration tests (MockMvc)
 ```
 
 **Tech:** Java 17, Spring Boot 3.4 (Web, Data JPA, Security, Validation, Thymeleaf, Actuator), H2, Bootstrap from a CDN.
@@ -131,12 +147,10 @@ Doctor pictures are simple generated avatars (initials on a colour); a doctor wi
 
 This is a student prototype:
 
-- **Doctors are not limited to their own records.** A doctor account can open and change any patient or
-  appointment, not only their own.
-- **Appointments and treatments are deleted through plain links (HTTP GET)**, which is unsafe: a malicious
-  page could trigger a delete for a logged-in user. They should be POST forms with a CSRF token, like the
-  doctor and medication deletes.
 - There is **no password reset**; an admin would have to change the database.
+- Deleting a treatment, or anything else, shows no confirmation banner afterwards; the list simply updates.
+- Two unused page templates (`list-doctor.html`, `choose-doctor-to-delete.html`) are left over from an
+  earlier design and point to addresses that do not exist.
 - The data is in memory and resets on restart.
 - The H2 database console is **off** by default. If you turn it on for debugging
   (`spring.h2.console.enabled=true`), only a logged-in admin can open it. Never enable it on a server
