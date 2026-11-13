@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Node ###
+# Bootstrap is loaded from a CDN, so nothing needs node_modules at runtime
+node_modules/
