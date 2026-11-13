@@ -51,12 +51,30 @@ public class DoctorController {
 
     @PostMapping("add")
     public String addDoctor(@Valid Doctor doctor, BindingResult result, Model model) {
+        requireEmail(doctor, result);
         if (result.hasErrors()) {
+            model.addAttribute("activePage", "doctor");
             return "doctor/add-doctor";
         }
 
+        // Only the fields on the form count. A request must not be able to choose the id, the login account
+        // or the appointments of a new doctor.
+        doctor.setDoctorId(null);
+        doctor.setUser(null);
+        doctor.setImage(null);
+        doctor.setAppointments(null);
         doctorRepository.save(doctor);
         return "redirect:/doctor";
+    }
+
+    /** The email is what links a doctor record to a login account, so it is required. */
+    private static void requireEmail(Doctor doctor, BindingResult result) {
+        String email = doctor.getEmail();
+        if (email == null || email.isBlank()) {
+            result.rejectValue("email", "email.required", "Please enter the doctor's email.");
+        } else if (!email.contains("@")) {
+            result.rejectValue("email", "email.invalid", "Please enter a valid email address.");
+        }
     }
 
     @GetMapping("update/{id}")
@@ -69,13 +87,29 @@ public class DoctorController {
 
     @PostMapping("update/{id}")
     public String updateDoctor(@PathVariable("id") long id, @Valid Doctor doctor, BindingResult result, Model model) {
+        Doctor existing = doctorRepository.findById((int) id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid doctor Id:" + id));
+
+        requireEmail(doctor, result);
         if (result.hasErrors()) {
             doctor.setDoctorId((int) id);
+            doctor.setImage(existing.getImage());
             return "doctor/update-doctor";
         }
 
-        doctor.setDoctorId((int) id);
-        doctorRepository.save(doctor);
+        // Copy only what the form edits onto the stored doctor. Saving the posted object itself would wipe the
+        // picture and the link to the doctor's login account (fields the form does not contain), and the
+        // doctor could no longer reach their dashboard.
+        existing.setName(doctor.getName());
+        existing.setRoom(doctor.getRoom());
+        existing.setPhone(doctor.getPhone());
+        existing.setEmail(doctor.getEmail().trim());
+        existing.setStreet(doctor.getStreet());
+        existing.setCity(doctor.getCity());
+        existing.setState(doctor.getState());
+        existing.setPostcode(doctor.getPostcode());
+        existing.setCountry(doctor.getCountry());
+        doctorRepository.save(existing);
         return "redirect:/doctor";
     }
 

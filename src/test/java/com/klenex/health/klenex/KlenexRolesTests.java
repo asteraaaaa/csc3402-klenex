@@ -25,6 +25,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -334,6 +338,108 @@ class KlenexRolesTests {
     }
 
     // ---------- doctor pictures ----------
+
+    // ---------- adding and editing doctors (found by the end-to-end run) ----------
+
+    @Test
+    @WithUserDetails("admin@klenex.com")
+    void doctorFormsAskForAnEmail() throws Exception {
+        mvc.perform(get("/doctor/signup")).andExpect(content().string(containsString("name=\"email\"")));
+        mvc.perform(get("/doctor/update/1")).andExpect(content().string(containsString("name=\"email\"")))
+                .andExpect(content().string(containsString("ahmad.ismail@klenex.com")));
+    }
+
+    @Test
+    @WithUserDetails("admin@klenex.com")
+    void aNewDoctorNeedsAValidEmailAndNothingIsSavedWithoutOne() throws Exception {
+        long before = doctors.count();
+        mvc.perform(post("/doctor/add").with(csrf()).param("name", "Dr. No Email"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Please enter the doctor")));
+        mvc.perform(post("/doctor/add").with(csrf()).param("name", "Dr. Bad Email").param("email", "not-an-email"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("valid email")));
+        assertEquals(before, doctors.count());
+    }
+
+    @Test
+    @WithUserDetails("admin@klenex.com")
+    void aRequestCannotChooseTheIdAccountOrPictureOfANewDoctor() throws Exception {
+        String email = "added-" + UUID.randomUUID() + "@example.com";
+        mvc.perform(post("/doctor/add").with(csrf())
+                        .param("name", "Dr. Added").param("email", email).param("room", "Z1")
+                        .param("doctorId", "1").param("user.id", "1").param("image", "evil.svg"))
+                .andExpect(redirectedUrl("/doctor"));
+
+        List<Doctor> saved = doctors.findAllByEmailIgnoreCase(email);
+        assertEquals(1, saved.size());
+        assertNotEquals(1, saved.get(0).getDoctorId(), "must not overwrite doctor 1");
+        assertNull(saved.get(0).getUser(), "must not be linked to someone else's login");
+        assertNull(saved.get(0).getImage());
+        assertEquals("Dr. Ahmad bin Ismail", doctors.findById(1).orElseThrow().getName(), "doctor 1 is untouched");
+    }
+
+    @Test
+    @WithUserDetails("admin@klenex.com")
+    void editingADoctorKeepsTheirPictureAndTheirLoginLink() throws Exception {
+        // a doctor with a picture and a login account, like the seeded ones
+        String email = newAccount();
+        Doctor doctor = new Doctor();
+        doctor.setName("Dr. Linked");
+        doctor.setEmail(email);
+        doctor.setPhone("0100000001");
+        doctor.setImage("linked.svg");
+        doctor.setUser(users.findByEmail(email));
+        doctor = doctors.save(doctor);
+
+        // the Edit form posts only its own fields: no picture, no account
+        mvc.perform(post("/doctor/update/" + doctor.getDoctorId()).with(csrf())
+                        .param("name", "Dr. Linked").param("email", email).param("phone", "0100000002")
+                        .param("room", "Q9").param("street", "1 Road").param("city", "Town")
+                        .param("state", "State").param("postcode", "11111").param("country", "Malaysia"))
+                .andExpect(redirectedUrl("/doctor"));
+
+        Doctor after = doctors.findById(doctor.getDoctorId()).orElseThrow();
+        assertEquals("0100000002", after.getPhone(), "the edit is saved");
+        assertEquals(email, after.getEmail(), "the email survives");
+        assertEquals("linked.svg", after.getImage(), "the picture survives");
+        assertNotNull(after.getUser(), "the link to the login account survives");
+        assertTrue(doctors.findByUserEmail(email).isPresent(), "the doctor can still be found by their login");
+    }
+
+    @Test
+    @WithUserDetails("admin@klenex.com")
+    void editingADoctorWithABlankEmailIsRefused() throws Exception {
+        Doctor doctor = new Doctor();
+        doctor.setName("Dr. Keep");
+        doctor.setEmail("keep-" + UUID.randomUUID() + "@example.com");
+        doctor = doctors.save(doctor);
+        String originalEmail = doctor.getEmail();
+
+        mvc.perform(post("/doctor/update/" + doctor.getDoctorId()).with(csrf()).param("name", "Dr. Changed").param("email", ""))
+                .andExpect(status().isOk());
+
+        Doctor after = doctors.findById(doctor.getDoctorId()).orElseThrow();
+        assertEquals("Dr. Keep", after.getName());
+        assertEquals(originalEmail, after.getEmail());
+    }
+
+    @Test
+    @WithUserDetails("admin@klenex.com")
+    void anAdminCanTurnARegisteredAccountIntoAWorkingDoctorEndToEnd() throws Exception {
+        String email = newAccount();
+
+        // 1. the admin adds the doctor with the same email, through the Add Doctor form
+        mvc.perform(post("/doctor/add").with(csrf()).param("name", "Dr. Fresh").param("email", email).param("room", "N1"))
+                .andExpect(redirectedUrl("/doctor"));
+        // 2. then gives the account the Doctor role on the Users screen
+        mvc.perform(post("/admin/users/" + idOf(email) + "/role").with(csrf()).param("role", "ROLE_DOCTOR"))
+                .andExpect(flash().attribute("message", "Role updated."));
+        // 3. and the person lands on their own dashboard
+        mvc.perform(get("/").with(as(email))).andExpect(redirectedUrl("/doctors"));
+        mvc.perform(get("/doctors").with(as(email))).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Dr. Fresh")));
+    }
 
     @Test
     @WithUserDetails("admin@klenex.com")

@@ -25,6 +25,15 @@
           </div>
 
           <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="email">Email</label>
+              <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="doctor@example.com" required>
+              <small class="text-muted">The doctor logs in with an account that has this same email.</small>
+              <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger d-block"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group col-md-6">
               <label for="room">Room</label>
               <input type="text" th:field="*{room}" class="form-control" id="room" placeholder="Room">
