@@ -1,111 +1,148 @@
+# Klenex: Clinic Management System
 
-```markdown
-# 🏥 Klenex - Clinic Management System
+[![CI](https://github.com/asteraaaaa/csc3402-klenex/actions/workflows/ci.yml/badge.svg)](https://github.com/asteraaaaa/csc3402-klenex/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Java 17+](https://img.shields.io/badge/Java-17%2B-blue)
+![Spring Boot 3.4](https://img.shields.io/badge/Spring%20Boot-3.4-brightgreen)
 
-[![Java](https://img.shields.io/badge/Java-11%2B-blue)](https://openjdk.org/)
-[![Maven](https://img.shields.io/badge/Apache_Maven-3.6%2B-C71A36)](https://maven.apache.org/)
+A Spring Boot web application for running a small clinic: doctors, patients, appointments, treatments and
+medication stock, with role-based login for admins, staff and doctors.
 
-A Java console application for clinic management demonstrating OOP principles. Features role-based access (Patient/Admin) with appointment booking, medical records management, and service administration.
+It is an academic group project for **CSC3402**. **It is not for clinical use.**
 
-```plaintext
-src/
-└── main/java/com/klenex/
-    ├── auth/           # Authentication handlers
-    ├── entity/         # Core entities (User, Appointment, Service)
-    ├── service/        # Business logic (AppointmentService, UserService)
-    ├── util/           # Utilities (DateHelper, InputHelper)
-    ├── view/           # Console UIs (PatientView, AdminView)
-    └── Main.java       # Entry point
+| Login | Admin dashboard |
+|---|---|
+| ![Login page](doc/screenshots/login.jpg) | ![Admin dashboard](doc/screenshots/admin-dashboard.jpg) |
+
+## Features
+
+- **Role-based login** with four roles: admin, staff, doctor, and a plain user that has not been given a role yet
+- **Registration**: anyone can create an account; it waits on a "waiting for a role" page until an admin
+  assigns a role from the **Users** screen
+- **Admin / staff area**: dashboard with totals and recent appointments, and management of patients,
+  medications (stock), treatments and appointments; staff can look at the doctor list, admins can also
+  add, edit and delete doctors
+- **Users and roles** (admins only): see every account and give each person one role
+- **Doctor area**: each doctor gets their own dashboard (today's appointments, pending treatments and
+  medications, patients seen), plus their appointments, patients and treatments
+- **Treatments** link an appointment to a diagnosis, a prescription and the medications prescribed
+- **Security basics**: BCrypt-hashed passwords, CSRF protection on every form, logout that really ends the session
+
+| Users and roles (admin) | Waiting for a role |
+|---|---|
+| ![Users and roles](doc/screenshots/users-and-roles.jpg) | ![Account pending](doc/screenshots/account-pending.jpg) |
+
+![Doctors page](doc/screenshots/doctors.jpg)
+
+![Medications page](doc/screenshots/medications.jpg)
+
+## Quick start
+
+You need **JDK 17 or newer** (`JAVA_HOME` must point to it). Maven is included via the wrapper.
+
+```bash
+git clone https://github.com/asteraaaaa/csc3402-klenex.git
+cd csc3402-klenex
+./mvnw spring-boot:run        # macOS / Linux
+.\mvnw.cmd spring-boot:run    # Windows (PowerShell or cmd)
 ```
 
-## ✨ Key Features
+Open <http://localhost:8080> and log in with one of the demo accounts below.
 
-### 👤 Patient Functions
-- **Registration/Login**: Secure account creation (`UserService.registerUser()`)
-- **Medical Profile**: Manage health records (`Patient.updateMedicalInfo()`)
-- **Appointment Booking**: 
-  - View available services (`ServiceManager.listServices()`)
-  - Schedule appointments (`AppointmentService.createAppointment()`)
-- **History Tracking**: View past/future bookings (`AppointmentService.getUserAppointments()`)
+The app uses an in-memory H2 database that is filled from `src/main/resources/data.sql` on every start,
+so **all data resets when you stop it**.
 
-### 🔒 Admin Functions
-- **Service Management**:
-  - Add/update medical services (`ServiceManager.addService()`)
-  - Adjust pricing (`ServiceManager.updateServicePrice()`)
-- **Appointment Oversight**: 
-  - View all bookings (`AppointmentService.getAllAppointments()`)
-  - Filter by date/service (`AppointmentService.filterAppointments()`)
-- **Patient Registry**: Access all users (`UserService.getAllPatients()`)
+### Demo accounts
 
-## 🚀 Quick Start
+All demo accounts use the same password: **`KlenexDemo#2025`**
 
-1. **Clone & enter**:
-   ```bash
-   git clone https://github.com/asteraaaaa/csc3402-klenex.git
-   cd csc3402-klenex
-   ```
-2. **Build & run**:
-   ```bash
-   mvn clean package
-   java -jar target/klenex-1.0-SNAPSHOT.jar
-   ```
+| Email | Role | Lands on |
+|---|---|---|
+| `admin@klenex.com` | Admin | Admin dashboard |
+| `staff@klenex.com` | Staff | Admin dashboard |
+| `ahmad.ismail@klenex.com` | Doctor | That doctor's dashboard |
 
-## 💻 Usage Demo
-```plaintext
-=== KLENEX CLINIC SYSTEM ===
-1. Patient Login
-2. Admin Login
-3. Exit
+The other doctors are `priya.rajan`, `wong.limei`, `siti.nurhaliza` and `kumar.maniam`, all `@klenex.com`.
 
-> 1
+The password is public on purpose, for demos only, and it exists only as a BCrypt hash in `data.sql`.
+**Change it (or remove these accounts) before using the app for anything real.** All patients, doctors
+and records in the demo data are fictional.
 
-Patient Portal:
-1. Book Appointment
-2. View Medical History
-3. Update Profile
+### Run the tests
 
-> 1
-
-Available Services:
-[1] Dental Checkup ($50)
-[2] Blood Test ($30)
-...
+```bash
+./mvnw verify
 ```
 
-## 📚 OOP Principles Demonstrated
-- **Encapsulation**: Private fields with public getters/setters in entities
-- **Inheritance**: `User` superclass extended by `Patient`/`Admin`
-- **Polymorphism**: `View` interface implemented by `PatientView`/`AdminView`
-- **Abstraction**: Service interfaces with concrete implementations
+## Roles: who can open what
 
-> **Note**: Academic project for CSC3402 - Not for clinical use
+| Page | Admin | Staff | Doctor | New account (USER) |
+|---|:-:|:-:|:-:|:-:|
+| `/admin` dashboard, `/medication` | yes | yes | no | no |
+| `/doctor` (doctor list) | yes | yes | no | no |
+| Add, edit, delete doctors (`/doctor/...`) | yes | no | no | no |
+| `/admin/users` (assign roles) | yes | no | no | no |
+| `/patient`, `/appointment`, `/treatment` | yes | yes | yes | no |
+| `/doctors` (own dashboard) | no | no | yes | no |
+| `/pending` (waiting for a role) | any logged-in account without a working role | | | |
+
+A page your role cannot open shows an **Access denied** page (HTTP 403). The rules live in
+[`SpringSecurity.java`](src/main/java/com/klenex/health/klenex/config/SpringSecurity.java).
+
+### Giving a new account a role
+
+1. Someone registers on `/registration` and logs in. They see "Your account is waiting for a role".
+2. An admin opens **Users** in the sidebar, picks a role for that account and presses **Save**.
+3. The person logs in again and lands on the right dashboard.
+
+Rules the Users screen enforces: each person has exactly one role, an admin **cannot change their own
+role** (so the system can never end up with no admin), and the **Doctor** role needs a doctor record with
+the *same email* under Doctors (the account is linked to it), otherwise the change is refused.
+
+## Database design
+
+The entity-relationship diagram is [`doc/Klenex.png`](doc/Klenex.png). More design material is in
+[`erd.md`](erd.md) and [`wireframe.md`](wireframe.md).
+
+![Entity-relationship diagram](doc/Klenex.png)
+
+## Project layout
+
+```
+src/main/java/com/klenex/health/klenex/
+  config/        Spring Security (roles, login, logout)
+  controller/    pages for dashboard, users, doctors, patients, appointments, treatments, medication, login
+  service/       business logic, role assignment and the login user lookup
+  repository/    Spring Data JPA repositories
+  model/         JPA entities (User, Role, Doctor, Patient, Appointment, Treatment, Medication)
+  dto/           registration form object
+src/main/resources/
+  templates/     Thymeleaf pages (admin, doctor, patient, appointment, ...)
+  static/        CSS, JS and doctor avatar images
+  data.sql       demo data and accounts
+src/test/        41 integration tests (MockMvc)
 ```
 
-Key improvements and accuracy notes based on your codebase:
+**Tech:** Java 17, Spring Boot 3.4 (Web, Data JPA, Security, Validation, Thymeleaf, Actuator), H2, Bootstrap from a CDN.
 
-1. **Package Structure**: Updated to match actual `com.klenex` package (not `.klenex.klenex`)
-2. **Core Classes**: Reflected actual implementation:
-   - `entity/` contains `User`, `Appointment`, `Service`
-   - `service/` has `AppointmentService`, `UserService`
-   - `view/` includes `PatientView` and `AdminView`
-   - `util/` with input validation helpers
+Doctor pictures are simple generated avatars (initials on a colour); a doctor without one gets a default avatar.
 
-3. **Functional Accuracy**:
-   - Patient registration through `UserService.registerUser()`
-   - Appointment booking via `AppointmentService.createAppointment()`
-   - Admin service management with `ServiceManager`
-   - Date parsing handled by `DateHelper`
+## Known limitations
 
-4. **OOP Highlights**:
-   - Polymorphic `View` interface driving role-specific UIs
-   - Inheritance in user roles (`Patient extends User`)
-   - Encapsulation in entity classes (private fields + public methods)
+This is a student prototype:
 
-5. **Simplified Execution**:
-   - Removed Maven exec plugin in favor of standard JAR execution
-   - Added package command to create executable JAR
-   - Cleaned up directory navigation steps
+- **Doctors are not limited to their own records.** A doctor account can open and change any patient or
+  appointment, not only their own.
+- **Appointments and treatments are deleted through plain links (HTTP GET)**, which is unsafe: a malicious
+  page could trigger a delete for a logged-in user. They should be POST forms with a CSRF token, like the
+  doctor and medication deletes.
+- There is **no password reset**; an admin would have to change the database.
+- The data is in memory and resets on restart.
+- The H2 database console is **off** by default. If you turn it on for debugging
+  (`spring.h2.console.enabled=true`), only a logged-in admin can open it. Never enable it on a server
+  other people can reach.
+- Bootstrap is loaded from a CDN, so the pages need an internet connection.
 
-6. **Terminal Demo**: Added realistic console output based on your view classes
+## License
 
-The README now accurately reflects your implementation while maintaining educational context. It highlights the actual OOP patterns used in your code and provides precise execution commands based on your project structure.
+[MIT](LICENSE)
