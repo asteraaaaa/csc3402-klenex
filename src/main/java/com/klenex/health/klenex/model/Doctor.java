@@ -26,9 +26,6 @@ public class Doctor {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "street")
     private String street;
 
@@ -54,21 +51,20 @@ public class Doctor {
     public Doctor() {
     }
 
-    public Doctor(Integer doctorId, Set<Appointment> appointments, String name, String room, String phone, String email, String password, String street, String city, String state, String postcode, String country, String image, User user) {
+    public Doctor(Integer doctorId, Set<Appointment> appointments, String name, String room, String phone, String email, String street, String city, String state, String postcode, String country, String image, User user) {
         this.doctorId = doctorId;
         this.appointments = appointments;
         this.name = name;
         this.room = room;
         this.phone = phone;
         this.email = email;
-        this.password = password;
         this.street = street;
         this.city = city;
         this.state = state;
         this.postcode = postcode;
         this.country = country;
         this.image = image;
-        this.user = new User();
+        this.user = user;
     }
 
     public Integer getDoctorId() {
@@ -117,14 +113,6 @@ public class Doctor {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getStreet() {
@@ -192,7 +180,6 @@ public class Doctor {
                 ", room='" + room + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", street='" + street + '\'' +
                 ", city='" + city + '\'' +
                 ", state='" + state + '\'' +

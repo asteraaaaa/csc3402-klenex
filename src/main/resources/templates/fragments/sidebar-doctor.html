@@ -4,7 +4,8 @@
 
             <li class="nav-item">
                 <a class="nav-link">
-                    <img th:src="@{'/images/' + ${doctor.image}}" alt="Doctor Image" class="nav-link-text rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                    <img th:with="avatar=${doctor.image != null and !#strings.isEmpty(doctor.image) ? doctor.image : 'default-avatar.svg'}"
+                         th:src="@{/images/{file}(file=${avatar})}" alt="Doctor Image" class="nav-link-text rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
                     <h5 class="nav-link-text mb-0" th:text="${doctor.name}"></h5>
                     <small class="nav-link-text text-muted" th:text="'Room: ' + ${doctor.room}"></small>
                 </a>
