@@ -6,6 +6,7 @@ import com.klenex.health.klenex.repository.TreatmentRepository;
 import com.klenex.health.klenex.repository.MedicationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -75,7 +76,16 @@ public class TreatmentServiceImpl implements TreatmentService {
     }
 
     @Override
+    @Transactional
     public void deleteTreatmentById(int id) {
-        treatmentRepository.deleteById(id);
+        treatmentRepository.findById(id).ifPresent(treatment -> {
+            // Appointment.treatment is mapped with cascade ALL. If the appointment still points at this
+            // treatment, Hibernate re-saves it when the changes are flushed and the delete is silently undone
+            // (the Delete button used to do nothing). Clear the link first so the delete sticks.
+            if (treatment.getAppointment() != null) {
+                treatment.getAppointment().setTreatment(null);
+            }
+            treatmentRepository.delete(treatment);
+        });
     }
 }
