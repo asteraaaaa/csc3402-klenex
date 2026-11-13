@@ -152,9 +152,7 @@ public class PatientController {
 
     @PostMapping("delete/{id}")
     public String deletePatient(@PathVariable("id") int id) {
-        System.out.println("Delete request received for ID: " + id);
         patientService.deletePatientById(id);
-        System.out.println("Delete operation completed for ID: " + id);
         return "redirect:/patient";
     }
 
